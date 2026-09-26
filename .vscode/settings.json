@@ -1,0 +1,6 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "c:\\Users\\brand\\OneDrive\\Desktop\\JUEGO AHORCADO\\lib\\gson-2.14.0.jar"
+    ]
+}
