@@ -9,13 +9,7 @@ public class GameRecord {
     private int dealerValue;
     private String date;
 
-    public GameRecord(
-            String username,
-            String result,
-            double bet,
-            int playerValue,
-            int dealerValue,
-            String date) {
+    public GameRecord(String username,String result,double bet,int playerValue,int dealerValue, String date) {
 
         this.username = username;
         this.result = result;
