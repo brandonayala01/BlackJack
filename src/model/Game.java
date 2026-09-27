@@ -1,5 +1,4 @@
 package model;
-import Player;
 
 public class Game {
     private Deck deck;
