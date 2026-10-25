@@ -1,6 +1,6 @@
 package model;
 
-public class Dealer extends Player{
+public class Dealer extends Users{
 
     public Dealer() {
         super("Dealer", 0);

@@ -2,12 +2,12 @@ package model;
 
 public class Game {
     private Deck deck;
-    private Player player;
+    private Users player;
     private Dealer dealer;
     private String status;
     private String result;
 
-    public Game(Player player) {
+    public Game(Users player) {
         this.player = player;
         this.dealer = new Dealer();
         this.deck = new Deck();
@@ -87,7 +87,7 @@ public class Game {
         return deck;
     }
 
-    public Player getPlayer() {
+    public Users getPlayer() {
         return player;
     }
 

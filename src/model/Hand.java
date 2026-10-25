@@ -7,7 +7,7 @@ public class Hand {
     private List<Card> cards;
 
     public Hand() {
-        this.cards = new ArrayList<>();
+        cards = new ArrayList<>();
     }
 
     public void addCard(Card card) {
@@ -48,7 +48,7 @@ public class Hand {
         return cards.size() == 2 && calculateScore() == 21;
     }
 
-    public void clear() {
+    public void clearHand() {
         cards.clear();
     }
 
@@ -56,12 +56,4 @@ public class Hand {
         return new ArrayList<>(cards);
     }
 
-    public int getCardCount() {
-        return cards.size();
-    }
-
-    @Override
-    public String toString() {
-        return cards.toString() + " (Puntos: " + calculateScore() + ")";
-    }
 }
