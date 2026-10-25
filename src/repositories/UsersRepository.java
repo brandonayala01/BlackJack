@@ -6,12 +6,11 @@ import persistence.JsonRepository;
 
 public class UsersRepository {
 
-    // Creamos el repositorio
     private JsonRepository<Users> repository;
     private Users myUsers;
 
     public UsersRepository() {
-        this.repository = new JsonRepository<>("src/data/users.json", Users.class);
+        this.repository = new JsonRepository<>("data\\users.json", Users.class);
         this.myUsers = this.repository.readFile();
         if (this.myUsers == null) {
             this.myUsers = new Users();

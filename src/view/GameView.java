@@ -123,7 +123,7 @@ public class GameView extends JFrame {
     private JButton action(String text) {
         JButton b = new JButton(text);
         b.setFont(new Font("SansSerif", Font.BOLD, 12));
-        b.setForeground(Color.WHITE);
+        b.setForeground(Color.BLACK);
         b.setBackground(Color.BLACK);
         b.setOpaque(true);
         b.setContentAreaFilled(true);
@@ -141,7 +141,6 @@ public class GameView extends JFrame {
         return b;
     }
 
-    // ---------- Metodos que usa el Presenter para pintar ----------
 
     public void setPlayerName(String name) {
         setTitle("Blackjack 21 • Player: " + name);
@@ -219,7 +218,6 @@ public class GameView extends JFrame {
         return String.format("$%,.2f", n);
     }
 
-    // ---------- Getters para que el Presenter registre los eventos ----------
 
     public JButton getBtnHit() {
         return hit;
