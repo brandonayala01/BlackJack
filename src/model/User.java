@@ -1,3 +1,4 @@
+
 package model;
 
 public class User {
@@ -46,20 +47,29 @@ public class User {
     }
 
     public void addBalance(double amount) {
-        if (amount > 0) {
-            this.balance += amount;
+        if (!Double.isFinite(amount) || amount <= 0) {
+            return;
+        }
+
+        double newBalance = balance + amount;
+
+        if (Double.isFinite(newBalance)) {
+            balance = newBalance;
         }
     }
 
     public boolean removeBalance(double amount) {
-        if (amount <= 0 || amount > balance) {
+        if (!Double.isFinite(amount)
+                || amount <= 0
+                || amount > balance) {
             return false;
         }
-        this.balance -= amount;
+
+        balance -= amount;
         return true;
     }
 
     public void resetBalance() {
-        this.balance = INITIAL_BALANCE;
+        balance = INITIAL_BALANCE;
     }
 }

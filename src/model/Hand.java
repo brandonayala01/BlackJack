@@ -1,9 +1,11 @@
+
 package model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Hand {
+
     private ArrayList<Card> cards;
 
     public Hand() {
@@ -16,16 +18,34 @@ public class Hand {
         }
     }
 
+    public Card removeCardAt(int index) {
+        if (index < 0 || index >= cards.size()) {
+            throw new IndexOutOfBoundsException("Invalid card index.");
+        }
+
+        return cards.remove(index);
+    }
+
+    public Card getCardAt(int index) {
+        return cards.get(index);
+    }
+
+    public int getCardCount() {
+        return cards.size();
+    }
+
     public int calculateScore() {
         int total = 0;
         int aces = 0;
 
         for (Card card : cards) {
-            int val = card.getValue();
-            if (val == 11) {
+            int value = card.getValue();
+
+            if (value == 11) {
                 aces++;
             }
-            total += val;
+
+            total += value;
         }
 
         while (total > 21 && aces > 0) {

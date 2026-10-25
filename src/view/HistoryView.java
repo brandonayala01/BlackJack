@@ -22,7 +22,8 @@ public class HistoryView extends JDialog {
         String[] columns = {"Date", "Player", "Result", "Bet", "Player total", "Dealer total"};
         Object[][] rows = new Object[history.size()][];
         for (int i = 0; i < history.size(); i++) {
-            GameRecord record = history.get(history.size() - 1 - i);
+            GameRecord record = history.get(i);
+
             rows[i] = new Object[]{
                 record.getDate(),
                 record.getUsername(),

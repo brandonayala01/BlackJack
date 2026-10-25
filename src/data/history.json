@@ -1,0 +1,268 @@
+{
+  "recordList": [
+    {
+      "username": "Brandon",
+      "result": "PLAYER_WIN",
+      "bet": 100.0,
+      "playerValue": 20,
+      "dealerValue": 19,
+      "date": "2026-10-25 10:06:08"
+    },
+    {
+      "username": "Laura",
+      "result": "PUSH",
+      "bet": 100.0,
+      "playerValue": 19,
+      "dealerValue": 19,
+      "date": "2026-10-25 10:37:05"
+    },
+    {
+      "username": "Laura",
+      "result": "DEALER_WIN",
+      "bet": 100.0,
+      "playerValue": 20,
+      "dealerValue": 21,
+      "date": "2026-10-25 10:37:19"
+    },
+    {
+      "username": "Laura",
+      "result": "DEALER_BUST",
+      "bet": 50.0,
+      "playerValue": 20,
+      "dealerValue": 26,
+      "date": "2026-10-25 10:37:47"
+    },
+    {
+      "username": "Andres",
+      "result": "PLAYER_BUST",
+      "bet": 100.0,
+      "playerValue": 23,
+      "dealerValue": 6,
+      "date": "2026-10-25 10:52:48"
+    },
+    {
+      "username": "Andres",
+      "result": "PLAYER_BUST",
+      "bet": 100.0,
+      "playerValue": 22,
+      "dealerValue": 13,
+      "date": "2026-10-25 10:55:27"
+    },
+    {
+      "username": "Andres",
+      "result": "DEALER_WIN",
+      "bet": 20.0,
+      "playerValue": 17,
+      "dealerValue": 19,
+      "date": "2026-10-25 10:55:39"
+    },
+    {
+      "username": "Andres",
+      "result": "DEALER_WIN",
+      "bet": 10.0,
+      "playerValue": 17,
+      "dealerValue": 18,
+      "date": "2026-10-25 10:56:01"
+    },
+    {
+      "username": "Andres",
+      "result": "PLAYER_WIN",
+      "bet": 25.0,
+      "playerValue": 21,
+      "dealerValue": 20,
+      "date": "2026-10-25 10:56:19"
+    },
+    {
+      "username": "Andres",
+      "result": "PLAYER_BUST",
+      "bet": 20.0,
+      "playerValue": 22,
+      "dealerValue": 21,
+      "date": "2026-10-25 10:56:50"
+    },
+    {
+      "username": "Andres",
+      "result": "DEALER_BUST",
+      "bet": 20.0,
+      "playerValue": 20,
+      "dealerValue": 26,
+      "date": "2026-10-25 10:56:57"
+    },
+    {
+      "username": "Andres",
+      "result": "DEALER_WIN",
+      "bet": 10.0,
+      "playerValue": 17,
+      "dealerValue": 19,
+      "date": "2026-10-25 10:57:22"
+    },
+    {
+      "username": "Andres",
+      "result": "PLAYER_BUST",
+      "bet": 50.0,
+      "playerValue": 22,
+      "dealerValue": 13,
+      "date": "2026-10-25 10:57:33"
+    },
+    {
+      "username": "Andres",
+      "result": "PLAYER_WIN",
+      "bet": 100.0,
+      "playerValue": 21,
+      "dealerValue": 20,
+      "date": "2026-10-25 10:57:44"
+    },
+    {
+      "username": "Andres",
+      "result": "DEALER_WIN",
+      "bet": 100.0,
+      "playerValue": 16,
+      "dealerValue": 17,
+      "date": "2026-10-25 10:59:05"
+    },
+    {
+      "username": "Andres",
+      "result": "DEALER_BUST",
+      "bet": 10.0,
+      "playerValue": 20,
+      "dealerValue": 22,
+      "date": "2026-10-25 10:59:17"
+    },
+    {
+      "username": "Andres",
+      "result": "PLAYER_BLACKJACK",
+      "bet": 10.0,
+      "playerValue": 21,
+      "dealerValue": 25,
+      "date": "2026-10-25 10:59:23"
+    },
+    {
+      "username": "Andres",
+      "result": "DEALER_WIN",
+      "bet": 10.0,
+      "playerValue": 17,
+      "dealerValue": 19,
+      "date": "2026-10-25 10:59:34"
+    },
+    {
+      "username": "Andres",
+      "result": "DEALER_WIN",
+      "bet": 50.0,
+      "playerValue": 15,
+      "dealerValue": 20,
+      "date": "2026-10-25 10:59:42"
+    },
+    {
+      "username": "Andres",
+      "result": "DEALER_BUST",
+      "bet": 10.0,
+      "playerValue": 16,
+      "dealerValue": 22,
+      "date": "2026-10-25 10:59:51"
+    },
+    {
+      "username": "Andres",
+      "result": "DEALER_WIN",
+      "bet": 10.0,
+      "playerValue": 16,
+      "dealerValue": 17,
+      "date": "2026-10-25 11:00:02"
+    },
+    {
+      "username": "Andres",
+      "result": "DEALER_WIN",
+      "bet": 10.0,
+      "playerValue": 17,
+      "dealerValue": 19,
+      "date": "2026-10-25 11:00:06"
+    },
+    {
+      "username": "Andres",
+      "result": "DEALER_BUST",
+      "bet": 25.0,
+      "playerValue": 14,
+      "dealerValue": 25,
+      "date": "2026-10-25 11:00:11"
+    },
+    {
+      "username": "Andres",
+      "result": "PLAYER_WIN",
+      "bet": 100.0,
+      "playerValue": 21,
+      "dealerValue": 20,
+      "date": "2026-10-25 11:00:35"
+    },
+    {
+      "username": "Andres",
+      "result": "PLAYER_WIN",
+      "bet": 50.0,
+      "playerValue": 18,
+      "dealerValue": 17,
+      "date": "2026-10-25 11:01:06"
+    },
+    {
+      "username": "Andres",
+      "result": "DEALER_WIN",
+      "bet": 10.0,
+      "playerValue": 14,
+      "dealerValue": 20,
+      "date": "2026-10-25 11:01:16"
+    },
+    {
+      "username": "Andres",
+      "result": "DEALER_BUST",
+      "bet": 10.0,
+      "playerValue": 13,
+      "dealerValue": 26,
+      "date": "2026-10-25 11:01:21"
+    },
+    {
+      "username": "Andres",
+      "result": "DEALER_BUST",
+      "bet": 10.0,
+      "playerValue": 12,
+      "dealerValue": 22,
+      "date": "2026-10-25 11:01:26"
+    },
+    {
+      "username": "Andres",
+      "result": "DEALER_WIN",
+      "bet": 10.0,
+      "playerValue": 13,
+      "dealerValue": 20,
+      "date": "2026-10-25 11:01:32"
+    },
+    {
+      "username": "Andres",
+      "result": "DEALER_BUST",
+      "bet": 10.0,
+      "playerValue": 12,
+      "dealerValue": 24,
+      "date": "2026-10-25 11:01:39"
+    },
+    {
+      "username": "Andres",
+      "result": "DEALER_WIN",
+      "bet": 10.0,
+      "playerValue": 11,
+      "dealerValue": 17,
+      "date": "2026-10-25 11:01:44"
+    },
+    {
+      "username": "Andres",
+      "result": "DEALER_BUST",
+      "bet": 10.0,
+      "playerValue": 13,
+      "dealerValue": 22,
+      "date": "2026-10-25 11:01:48"
+    },
+    {
+      "username": "Andres",
+      "result": "DEALER_WIN",
+      "bet": 10.0,
+      "playerValue": 14,
+      "dealerValue": 18,
+      "date": "2026-10-25 11:01:53"
+    }
+  ]
+}

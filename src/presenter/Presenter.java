@@ -1,9 +1,12 @@
+
 package presenter;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+
 import javax.swing.JButton;
+
 import model.Card;
 import model.Game;
 import model.GameResult;
@@ -17,26 +20,29 @@ public class Presenter implements ActionListener {
     private GameView gameView;
 
     public Presenter() {
-        this.game = new Game();
-        this.loginView = new LoginView();
-        this.setLoginEvents();
+        game = new Game();
+        loginView = new LoginView();
+        setLoginEvents();
     }
 
     public void run() {
-        this.loginView.setVisible(true);
+        loginView.setVisible(true);
     }
 
-    public void setLoginEvents() {
-        this.loginView.getBtnStart().addActionListener(this);
+    private void setLoginEvents() {
+        loginView.getBtnStart().addActionListener(this);
     }
 
-    public void setGameEvents() {
-        this.gameView.getBtnHit().addActionListener(this);
-        this.gameView.getBtnStand().addActionListener(this);
-        this.gameView.getBtnDeal().addActionListener(this);
-        this.gameView.getBtnClear().addActionListener(this);
-        this.gameView.getBtnHistory().addActionListener(this);
-        for (JButton chip : this.gameView.getChips()) {
+    private void setGameEvents() {
+        gameView.getBtnHit().addActionListener(this);
+        gameView.getBtnStand().addActionListener(this);
+        gameView.getBtnDeal().addActionListener(this);
+        gameView.getBtnClear().addActionListener(this);
+        gameView.getBtnHistory().addActionListener(this);
+        gameView.getBtnDouble().addActionListener(this);
+        gameView.getBtnSplit().addActionListener(this);
+
+        for (JButton chip : gameView.getChips()) {
             chip.addActionListener(this);
         }
     }
@@ -45,155 +51,261 @@ public class Presenter implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
 
-        if (source == this.loginView.getBtnStart()) {
-            this.login();
-            return;
-        }
-        if (this.gameView == null) {
+        if (source == loginView.getBtnStart()) {
+            login();
             return;
         }
 
-        if (source == this.gameView.getBtnHit()) {
-            this.hit();
-        } else if (source == this.gameView.getBtnStand()) {
-            this.stand();
-        } else if (source == this.gameView.getBtnDeal()) {
-            this.startRound();
-        } else if (source == this.gameView.getBtnClear()) {
-            this.clearBet();
-        } else if (source == this.gameView.getBtnHistory()) {
-            this.gameView.showHistory(this.game.getHistory());
-        } else if (this.gameView.getChips().contains(source)) {
-            // el valor de la ficha viene en el actionCommand ("10", "25", ...)
-            this.placeBet(Double.parseDouble(((JButton) source).getActionCommand()));
+        if (gameView == null) {
+            return;
+        }
+
+        if (source == gameView.getBtnHit()) {
+            hit();
+        } else if (source == gameView.getBtnStand()) {
+            stand();
+        } else if (source == gameView.getBtnDouble()) {
+            doubleDown();
+        } else if (source == gameView.getBtnSplit()) {
+            split();
+        } else if (source == gameView.getBtnDeal()) {
+            startRound();
+        } else if (source == gameView.getBtnClear()) {
+            clearBet();
+        } else if (source == gameView.getBtnHistory()) {
+            gameView.showHistory(game.getHistory());
+        } else if (gameView.getChips().contains(source)) {
+            double amount = Double.parseDouble(
+                    ((JButton) source).getActionCommand());
+
+            placeBet(amount);
         }
     }
 
     // ---------- Login ----------
 
     private void login() {
-        String error = this.game.login(this.loginView.getUsername(),
-                this.loginView.getEmail(), this.loginView.getPassword());
+        String error = game.login(
+                loginView.getUsername(),
+                loginView.getEmail(),
+                loginView.getPassword()
+        );
+
         if (error != null) {
-            this.loginView.showMessage(error);
+            loginView.showMessage(error);
             return;
         }
 
-        this.loginView.dispose();
-        this.gameView = new GameView();
-        this.setGameEvents();
-        this.gameView.setPlayerName(this.game.getCurrentUser().getUsername());
-        this.updateAll();
-        if (this.game.isReturningUser()) {
-            this.gameView.showInfo("Welcome back, " + this.game.getCurrentUser().getUsername()
-                    + ". Place a bet to start.");
+        loginView.dispose();
+
+        gameView = new GameView();
+        setGameEvents();
+
+        gameView.setPlayerName(game.getCurrentUser().getUsername());
+        updateAll();
+
+        if (game.isReturningUser()) {
+            gameView.showInfo(
+                    "Welcome back, "
+                    + game.getCurrentUser().getUsername()
+                    + ". Place a bet to start."
+            );
         }
-        this.gameView.setVisible(true);
-        this.checkBroke();
+
+        gameView.setVisible(true);
+        checkBroke();
     }
 
-    // ---------- Acciones de la mano ----------
+    // ---------- Apuestas ----------
 
     private void placeBet(double amount) {
-        String error = this.game.addToBet(amount);
+        String error = game.addToBet(amount);
+
         if (error != null) {
-            this.gameView.showInfo(error);
+            gameView.showInfo(error);
             return;
         }
-        this.updateAll();
-        this.gameView.showInfo("Bet: " + String.format("$%,.2f", this.game.getBet()) + " • Press NEW HAND.");
+
+        updateAll();
+        gameView.showInfo(
+                "Bet: " + money(game.getBet()) + " • Press NEW HAND.");
     }
 
     private void clearBet() {
-        this.game.clearBet();
-        this.updateAll();
-        this.gameView.showInfo("Bet cleared.");
+        game.clearBet();
+        updateAll();
+        gameView.showInfo("Bet cleared.");
     }
 
+    // ---------- Partida ----------
+
     private void startRound() {
-        String error = this.game.startRound();
+        String error = game.startRound();
+
         if (error != null) {
-            this.gameView.showInfo(error);
+            gameView.showInfo(error);
             return;
         }
-        this.updateAll();
-        if (this.game.isFinished()) {
-            this.finishRound();
+
+        updateAll();
+
+        if (game.isFinished()) {
+            finishRound();
         } else {
-            this.gameView.showInfo("Your turn. HIT or STAND.");
+            gameView.showInfo("Hand 1: HIT, STAND, DOUBLE or SPLIT.");
         }
     }
 
     private void hit() {
-        this.game.playerHit();
-        this.updateAll();
-        if (this.game.isFinished()) {
-            this.finishRound();
+        game.playerHit();
+        updateAll();
+
+        if (game.isFinished()) {
+            finishRound();
+        } else {
+            showCurrentHand();
         }
     }
 
     private void stand() {
-        this.game.playerStand();
-        this.updateAll();
-        this.finishRound();
+        if (!game.isPlaying()) {
+            return;
+        }
+
+        game.playerStand();
+        updateAll();
+
+        if (game.isFinished()) {
+            finishRound();
+        } else {
+            showCurrentHand();
+        }
     }
 
-    private void finishRound() {
-        String result = this.game.getResult();
-        String message = this.game.getResultMessage();
+    private void doubleDown() {
+        String error = game.doubleDown();
 
-        if (result.equals(GameResult.PLAYER_BLACKJACK) || result.equals(GameResult.PLAYER_WIN)
-                || result.equals(GameResult.DEALER_BUST)) {
-            this.gameView.showWin(message);
-        } else if (result.equals(GameResult.PUSH)) {
-            this.gameView.showPush(message);
-        } else {
-            this.gameView.showLose(message);
+        if (error != null) {
+            gameView.showInfo(error);
+            return;
         }
-        this.checkBroke();
+
+        updateAll();
+
+        if (game.isFinished()) {
+            finishRound();
+        } else {
+            showCurrentHand();
+        }
+    }
+
+    private void split() {
+        String error = game.split();
+
+        if (error != null) {
+            gameView.showInfo(error);
+            return;
+        }
+
+        updateAll();
+
+        if (game.isFinished()) {
+            finishRound();
+        } else {
+            showCurrentHand();
+        }
+    }
+
+    private void showCurrentHand() {
+        gameView.showInfo(
+                "Playing hand " + (game.getCurrentHandIndex() + 1)
+                + " of " + game.getHandCount()
+                + ". Bet: " + money(game.getCurrentHandBet()));
+    }
+
+    // ---------- Resultado ----------
+
+    private void finishRound() {
+        String result = game.getResult();
+
+        if (result == null) {
+            return;
+        }
+
+        String message = game.getResultMessage();
+
+        if (result.equals(GameResult.PLAYER_BLACKJACK)
+                || result.equals(GameResult.PLAYER_WIN)
+                || result.equals(GameResult.DEALER_BUST)) {
+            gameView.showWin(message);
+        } else if (result.equals(GameResult.PUSH)) {
+            gameView.showPush(message);
+        } else {
+            gameView.showLose(message);
+        }
+
+        updateAll();
+        checkBroke();
     }
 
     private void checkBroke() {
-        if (this.game.isBroke() && this.gameView.askRecharge()) {
-            this.game.recharge();
-            this.updateAll();
-            this.gameView.showInfo("Balance restored. Place a bet to start.");
+        if (game.isBroke() && gameView.askRecharge()) {
+            game.recharge();
+            updateAll();
+            gameView.showInfo("Balance restored. Place a bet to start.");
         }
     }
 
-    // ---------- Pintar la vista con los datos del modelo ----------
+    // ---------- Actualización de la interfaz ----------
 
     private void updateAll() {
-        this.updateHeader();
-        this.updateBoard();
-        this.gameView.showButtons(this.game.isPlaying(), this.game.getBet());
+        updateHeader();
+        updateBoard();
+
+        gameView.showButtons(
+                game.isPlaying(),
+                game.getBet(),
+                game.canDouble(),
+                game.canSplit()
+        );
     }
 
     private void updateHeader() {
-        this.gameView.showHeader(this.game.getCurrentUser().getBalance(), this.game.getBet());
+        gameView.showHeader(
+                game.getCurrentUser().getBalance(),
+                game.getBet()
+        );
     }
 
     private void updateBoard() {
-        List<Card> dealerCards = this.game.getDealerCards();
-        List<Card> playerCards = this.game.getPlayerCards();
-        boolean playing = this.game.isPlaying();
+        List<Card> dealerCards = game.getDealerCards();
 
         String dealerText = "";
+
         if (!dealerCards.isEmpty()) {
-            if (playing) {
-                dealerText = "Visible card: " + dealerCards.get(0).getValue() + "  •  Hidden card: ?";
+            if (game.isPlaying()) {
+                dealerText = "Visible card: "
+                        + dealerCards.get(0).getRank()
+                        + " • Hidden card: ?";
             } else {
-                dealerText = "Total: " + this.game.getDealerScore()
-                        + (this.game.isDealerBust() ? "  •  BUST" : "");
+                dealerText = "Total: " + game.getDealerScore()
+                        + (game.isDealerBust() ? " • BUST" : "");
             }
         }
 
-        String playerText = "";
-        if (!playerCards.isEmpty()) {
-            playerText = "Total: " + this.game.getPlayerScore()
-                    + (this.game.isPlayerBust() ? "  •  BUST" : "");
-        }
+        gameView.showBoard(
+                dealerCards,
+                game.getPlayerHands(),
+                game.getPlayerScores(),
+                game.getHandBets(),
+                game.getPlayerBusts(),
+                game.getCurrentHandIndex(),
+                game.isPlaying(),
+                dealerText
+        );
+    }
 
-        this.gameView.showBoard(dealerCards, playerCards, playing, dealerText, playerText);
+    private String money(double amount) {
+        return String.format("$%,.2f", amount);
     }
 }

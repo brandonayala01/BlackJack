@@ -1,0 +1,25 @@
+{
+  "userList": [
+    {
+      "id": 1,
+      "username": "Brandon",
+      "email": "brandonayala@gmail.com",
+      "password": "123456",
+      "balance": 1100.0
+    },
+    {
+      "id": 2,
+      "username": "Laura",
+      "email": "lauraramirez@gmail.com",
+      "password": "12345",
+      "balance": 950.0
+    },
+    {
+      "id": 3,
+      "username": "Andres",
+      "email": "andres@gmail.com",
+      "password": "123456",
+      "balance": 855.0
+    }
+  ]
+}
