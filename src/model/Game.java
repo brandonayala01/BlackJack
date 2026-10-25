@@ -18,26 +18,16 @@ public class Game {
     private boolean returningUser;
 
     private Deck deck;
-<<<<<<< HEAD
-    private Users player;
-=======
     private Hand playerHand;
->>>>>>> e32d335cf210bfa0957d30e32772fab6cd3adcd2
     private Dealer dealer;
     private double bet;
     private String status;
     private String result;
     private String resultMessage;
 
-<<<<<<< HEAD
-    public Game(Users player) {
-        this.player = player;
-        this.dealer = new Dealer();
-=======
     public Game() {
         this.usersRepository = new UsersRepository();
         this.historyRepository = new HistoryRepository();
->>>>>>> e32d335cf210bfa0957d30e32772fab6cd3adcd2
         this.deck = new Deck();
         this.playerHand = new Hand();
         this.dealer = new Dealer();
@@ -47,10 +37,6 @@ public class Game {
         this.resultMessage = "";
     }
 
-    // ---------- Usuario ----------
-
-    // Si el usuario existe lo reutiliza (conserva su saldo). Devuelve null si todo salio bien
-    // o un mensaje de error para mostrar
     public String login(String username, String email, String password) {
         if (username.length() < 2 || email.isEmpty() || password.isEmpty()) {
             return "Enter a username (at least 2 characters), an email and a password.";
@@ -75,7 +61,6 @@ public class Game {
         return this.returningUser;
     }
 
-    // Sin saldo suficiente para la apuesta minima
     public boolean isBroke() {
         return !isPlaying() && this.currentUser.getBalance() < MIN_BET;
     }
@@ -85,9 +70,6 @@ public class Game {
         this.usersRepository.save();
     }
 
-    // ---------- Apuesta ----------
-
-    // Suma una ficha a la apuesta. Devuelve null si se pudo o un mensaje de error
     public String addToBet(double amount) {
         if (isPlaying()) {
             return "You can't change the bet during a hand.";
@@ -107,10 +89,6 @@ public class Game {
             this.bet = 0;
         }
     }
-
-    // ---------- Mano ----------
-
-    // Descuenta la apuesta, reparte y guarda el saldo. Devuelve null si se pudo o un mensaje de error
     public String startRound() {
         if (isPlaying()) {
             return "There is already a hand in progress.";
@@ -171,7 +149,6 @@ public class Game {
         }
     }
 
-    // Define el resultado, paga la apuesta y guarda el saldo y la mano en los archivos
     private void determineResult() {
         Hand dealerHand = this.dealer.getHand();
         int playerScore = this.playerHand.calculateScore();
@@ -226,15 +203,8 @@ public class Game {
         return String.format("$%,.2f", n);
     }
 
-<<<<<<< HEAD
-    public Users getPlayer() {
-        return player;
-=======
-    // ---------- Consultas ----------
-
     public boolean isPlaying() {
         return this.status.equals(GameStatus.PLAYING);
->>>>>>> e32d335cf210bfa0957d30e32772fab6cd3adcd2
     }
 
     public boolean isFinished() {

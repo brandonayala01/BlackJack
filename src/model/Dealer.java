@@ -1,13 +1,9 @@
 
 package model;
 
-<<<<<<< HEAD
-public class Dealer extends Users{
-=======
 public class Dealer {
 
     private Hand hand;
->>>>>>> e32d335cf210bfa0957d30e32772fab6cd3adcd2
 
     public Dealer() {
         this.hand = new Hand();
