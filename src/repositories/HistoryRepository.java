@@ -7,7 +7,7 @@ import persistence.JsonRepository;
 
 public class HistoryRepository {
 
-    // Creamos el repositorio
+
     private JsonRepository<History> repository;
     private History myHistory;
 
