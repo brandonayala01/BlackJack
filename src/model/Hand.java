@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Hand {
-    private List<Card> cards;
+    private ArrayList<Card> cards;
 
     public Hand() {
         cards = new ArrayList<>();
@@ -36,10 +36,6 @@ public class Hand {
         return total;
     }
 
-    public int getValue() {
-        return calculateScore();
-    }
-
     public boolean isBust() {
         return calculateScore() > 21;
     }
@@ -48,12 +44,22 @@ public class Hand {
         return cards.size() == 2 && calculateScore() == 21;
     }
 
+<<<<<<< HEAD
     public void clearHand() {
         cards.clear();
     }
 
+=======
+>>>>>>> e32d335cf210bfa0957d30e32772fab6cd3adcd2
     public List<Card> getCards() {
         return new ArrayList<>(cards);
     }
 
+<<<<<<< HEAD
 }
+=======
+    public void clearHand() {
+        cards.clear();
+    }
+}
+>>>>>>> e32d335cf210bfa0957d30e32772fab6cd3adcd2

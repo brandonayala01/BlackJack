@@ -3,61 +3,33 @@ package model;
 import java.util.Random;
 
 public class Deck {
-
     private Card[] cards;
     private int top;
+    private Random random;
 
     public Deck() {
         cards = new Card[52];
         top = 0;
+        random = new Random();
 
         createDeck();
-        shuffle();
     }
 
     private void createDeck() {
+        String[] suits = {"Hearts", "Diamonds", "Clubs", "Spades"};
+        String[] ranks = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"};
+        int index = 0;
 
-        String[] suits = {
-            "Corazones",
-            "Diamantes",
-            "Tréboles",
-            "Picas"
-        };
-
-        String[] ranks = {
-            "A",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "J",
-            "Q",
-            "K"
-        };
-
-        int position = 0;
-
-        for (int i = 0; i < suits.length; i++) {
-
-            for (int j = 0; j < ranks.length; j++) {
-
-                cards[position] = new Card(suits[i], ranks[j]);
-                position++;
+        for (String suit : suits) {
+            for (String rank : ranks) {
+                cards[index] = new Card(suit, rank);
+                index++;
             }
         }
     }
 
     public void shuffle() {
-
-        Random random = new Random();
-
         for (int i = cards.length - 1; i > 0; i--) {
-
             int position = random.nextInt(i + 1);
 
             Card temporary = cards[i];
@@ -69,14 +41,11 @@ public class Deck {
     }
 
     public Card drawCard() {
-
         if (top >= cards.length) {
             return null;
         }
-
         Card card = cards[top];
         top++;
-
         return card;
     }
 
