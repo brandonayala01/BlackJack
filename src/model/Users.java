@@ -10,7 +10,6 @@ public class Users {
         this.userList = new ArrayList<>();
     }
 
-    // Agregar un usuario y setear automaticamente el id
     public void addUser(User user) {
         int newId = 1;
         if (!this.userList.isEmpty()) {
@@ -20,7 +19,6 @@ public class Users {
         this.userList.add(user);
     }
 
-    // Buscar un usuario por nombre (sin importar mayusculas), null si no existe
     public User findByName(String username) {
         for (int i = 0; i < this.userList.size(); i++) {
             if (this.userList.get(i).getUsername().equalsIgnoreCase(username)) {

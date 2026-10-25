@@ -37,10 +37,6 @@ public class Game {
         this.resultMessage = "";
     }
 
-    // ---------- Usuario ----------
-
-    // Si el usuario existe lo reutiliza (conserva su saldo). Devuelve null si todo salio bien
-    // o un mensaje de error para mostrar
     public String login(String username, String email, String password) {
         if (username.length() < 2 || email.isEmpty() || password.isEmpty()) {
             return "Enter a username (at least 2 characters), an email and a password.";
@@ -65,7 +61,6 @@ public class Game {
         return this.returningUser;
     }
 
-    // Sin saldo suficiente para la apuesta minima
     public boolean isBroke() {
         return !isPlaying() && this.currentUser.getBalance() < MIN_BET;
     }
@@ -75,9 +70,6 @@ public class Game {
         this.usersRepository.save();
     }
 
-    // ---------- Apuesta ----------
-
-    // Suma una ficha a la apuesta. Devuelve null si se pudo o un mensaje de error
     public String addToBet(double amount) {
         if (isPlaying()) {
             return "You can't change the bet during a hand.";
@@ -97,10 +89,6 @@ public class Game {
             this.bet = 0;
         }
     }
-
-    // ---------- Mano ----------
-
-    // Descuenta la apuesta, reparte y guarda el saldo. Devuelve null si se pudo o un mensaje de error
     public String startRound() {
         if (isPlaying()) {
             return "There is already a hand in progress.";
@@ -161,7 +149,6 @@ public class Game {
         }
     }
 
-    // Define el resultado, paga la apuesta y guarda el saldo y la mano en los archivos
     private void determineResult() {
         Hand dealerHand = this.dealer.getHand();
         int playerScore = this.playerHand.calculateScore();
@@ -215,8 +202,6 @@ public class Game {
     private String money(double n) {
         return String.format("$%,.2f", n);
     }
-
-    // ---------- Consultas ----------
 
     public boolean isPlaying() {
         return this.status.equals(GameStatus.PLAYING);

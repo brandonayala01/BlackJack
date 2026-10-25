@@ -44,11 +44,12 @@ public class Hand {
         return cards.size() == 2 && calculateScore() == 21;
     }
 
+    public void clearHand() {
+        cards.clear();
+    }
+
     public List<Card> getCards() {
         return new ArrayList<>(cards);
     }
 
-    public void clearHand() {
-        cards.clear();
-    }
 }
