@@ -6,7 +6,7 @@ import persistence.JsonRepository;
 
 public class UsersRepository {
 
-    // Creamos el repositorio
+
     private JsonRepository<Users> repository;
     private Users myUsers;
 
