@@ -1,18 +1,31 @@
+
 package model;
 
-public class Dealer extends Player{
+public class Dealer {
+
+    private Hand hand;
 
     public Dealer() {
-        super("Dealer", 0);
+        this.hand = new Hand();
+    }
+
+    public Hand getHand() {
+        return hand;
+    }
+
+    public void hit(Card card) {
+        hand.addCard(card);
+    }
+
+    public void resetHand() {
+        hand.clearHand();
     }
 
     public boolean mustHit() {
-
-        return getHand().getValue() < 17;
+        return hand.calculateScore() < 17;
     }
 
-    public boolean mustStand() {
-
-        return getHand().getValue() >= 17;
+    public boolean isBust() {
+        return hand.isBust();
     }
 }

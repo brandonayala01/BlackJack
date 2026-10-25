@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Hand {
-    private List<Card> cards;
+    private ArrayList<Card> cards;
 
     public Hand() {
-        this.cards = new ArrayList<>();
+        cards = new ArrayList<>();
     }
 
     public void addCard(Card card) {
@@ -36,10 +36,6 @@ public class Hand {
         return total;
     }
 
-    public int getValue() {
-        return calculateScore();
-    }
-
     public boolean isBust() {
         return calculateScore() > 21;
     }
@@ -48,20 +44,11 @@ public class Hand {
         return cards.size() == 2 && calculateScore() == 21;
     }
 
-    public void clear() {
-        cards.clear();
-    }
-
     public List<Card> getCards() {
         return new ArrayList<>(cards);
     }
 
-    public int getCardCount() {
-        return cards.size();
-    }
-
-    @Override
-    public String toString() {
-        return cards.toString() + " (Puntos: " + calculateScore() + ")";
+    public void clearHand() {
+        cards.clear();
     }
 }

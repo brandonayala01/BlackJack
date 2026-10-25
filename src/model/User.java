@@ -1,6 +1,10 @@
 package model;
 
 public class User {
+
+    public static final double INITIAL_BALANCE = 1000;
+
+    private int id;
     private String username;
     private String email;
     private String password;
@@ -10,7 +14,15 @@ public class User {
         this.username = username;
         this.email = email;
         this.password = password;
-        this.balance = 1000;
+        this.balance = INITIAL_BALANCE;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getUsername() {
@@ -34,20 +46,20 @@ public class User {
     }
 
     public void addBalance(double amount) {
-
         if (amount > 0) {
-            balance += amount;
+            this.balance += amount;
         }
     }
 
     public boolean removeBalance(double amount) {
-
         if (amount <= 0 || amount > balance) {
             return false;
         }
-
-        balance -= amount;
+        this.balance -= amount;
         return true;
     }
-    
+
+    public void resetBalance() {
+        this.balance = INITIAL_BALANCE;
+    }
 }
