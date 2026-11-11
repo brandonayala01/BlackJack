@@ -15,7 +15,7 @@ import model.ResultadoMano;
 import model.Ronda;
 import model.Usuario;
 
-// Ventana "¡GANASTE LA RONDA!" con el nuevo saldo y los botones SIGUIENTE RONDA / VOLVER AL MENÚ PRINCIPAL.
+
 public class PanelResultado extends VentanaModal {
 
     private final String detalle;
@@ -43,7 +43,7 @@ public class PanelResultado extends VentanaModal {
         detalle = ronda.getDetalleResultado();
         saldoTexto = String.format(Locale.US, "%,d FICHAS", usuario.getSaldo());
 
-        // Con split se listan los resultados de cada mano.
+
         ArrayList<ResultadoMano> resultados = ronda.getResultados();
         if (resultados.size() > 1) {
             StringBuilder sb = new StringBuilder("Manos: ");
@@ -85,7 +85,7 @@ public class PanelResultado extends VentanaModal {
         Graphics2D g = Estilo.suavizar(g0);
         int w = getWidth() - 6;
 
-        // Caja del nuevo saldo
+
         RoundRectangle2D caja = new RoundRectangle2D.Float(45, 142, w - 90, 70, 16, 16);
         g.setColor(new Color(58, 28, 16, 235));
         g.fill(caja);
@@ -106,7 +106,7 @@ public class PanelResultado extends VentanaModal {
         Estilo.dibujarTextoDegradado(g, saldoTexto, f2, x + m1.stringWidth(parte1), base,
                 new Color(0xF6E19A), new Color(0xD1A040), 2);
 
-        // Detalle
+     
         Font f3 = Estilo.fuente(Font.PLAIN, 26);
         FontMetrics m3 = g.getFontMetrics(f3);
         Estilo.dibujarTextoSombra(g, detalle, f3, Estilo.CREMA, (w - m3.stringWidth(detalle)) / 2, 252);
