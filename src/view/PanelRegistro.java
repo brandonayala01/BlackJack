@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 import java.util.Arrays;
 import javax.swing.SwingConstants;
 
-// Pantalla "CREAR CUENTA". Los textos de error los entrega ControladorAutenticacion.
 public class PanelRegistro extends PanelFieltro {
 
     private final VentanaPrincipal ventana;
@@ -55,7 +54,7 @@ public class PanelRegistro extends PanelFieltro {
                 .alinearDerecha(Estilo.ANCHO - 30, 28);
         add(volver);
 
-        // --- Acciones ---
+
         ActionListener alRegistrar = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -63,7 +62,7 @@ public class PanelRegistro extends PanelFieltro {
             }
         };
         registrarse.addActionListener(alRegistrar);
-        campoConfirmar.addActionListener(alRegistrar);   // Enter en el último campo
+        campoConfirmar.addActionListener(alRegistrar);  
         encadenarEnter(campoUsuario, campoCorreo);
         encadenarEnter(campoCorreo, campoClave);
         encadenarEnter(campoClave, campoConfirmar);
@@ -100,7 +99,6 @@ public class PanelRegistro extends PanelFieltro {
         });
     }
 
-    // Etiqueta pequeña encima + campo de texto (la etiqueta queda 34 px arriba).
     private void agregarCampo(String texto, javax.swing.JTextField campo, int y) {
         Etiqueta lbl = new Etiqueta(texto, 24, Estilo.TEXTO_SUAVE, false);
         lbl.setBounds(432, y - 34, 360, 30);
@@ -130,7 +128,7 @@ public class PanelRegistro extends PanelFieltro {
             etiquetaError.setText(error);
             return;
         }
-        ventana.alIniciarSesion();   // registrar() ya dejó la sesión iniciada
+        ventana.alIniciarSesion(); 
     }
 
     public void alMostrar() {
