@@ -20,10 +20,7 @@ import javax.swing.SwingConstants;
 import model.Estadisticas;
 import model.Usuario;
 
-// Ventana "PERFIL Y AJUSTES DE GUARDADO": avatar (flechas), nombre editable y estadísticas rápidas.
-//  - X (arriba a la derecha): cierra la ventana y sigues en la mesa.
-//  - CERRAR VENTANA: lleva al menú principal.
-//  - GUARDAR CAMBIOS: valida y guarda con ControladorPerfil (los errores salen bajo el nombre).
+
 public class PanelPerfil extends VentanaModal {
 
     private static final int CENTRO_AVATAR_X = 178;
@@ -48,11 +45,11 @@ public class PanelPerfil extends VentanaModal {
         setTitulo("PERFIL Y AJUSTES DE GUARDADO", 36, 30, new Color(0xF8EEDA), new Color(0xD8C39C));
         agregarCerrar(alCerrarX);
 
-        // Flechas del avatar
+       
         add(crearFlecha(true));
         add(crearFlecha(false));
 
-        // Nombre con lápiz
+       
         campoNombre = new CampoTexto() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -76,7 +73,7 @@ public class PanelPerfil extends VentanaModal {
             }
         });
 
-        // Cerrar sesión (extra, no está en el boceto)
+        
         BotonMetalico sesion = new BotonMetalico("CERRAR SESIÓN", BotonMetalico.Tipo.MADERA)
                 .tamanoTexto(22).ubicar(366, 306, 264, 46);
         sesion.addActionListener(new ActionListener() {
@@ -115,13 +112,13 @@ public class PanelPerfil extends VentanaModal {
             mensaje.setText(error);
             return;
         }
-        campoNombre.setText(usuario.getNombre());   // por si se recortaron espacios
+        campoNombre.setText(usuario.getNombre());   
         mensaje.setForeground(Estilo.VERDE_GANA);
         mensaje.setText("Cambios guardados.");
         alGuardar.run();
     }
 
-    // ---------------------------------------------------------------
+
     private JButton crearFlecha(final boolean izquierda) {
         JButton b = new JButton() {
             @Override
@@ -176,13 +173,12 @@ public class PanelPerfil extends VentanaModal {
         g.dispose();
     }
 
-    // ---------------------------------------------------------------
     @Override
     protected void paintComponent(Graphics g0) {
         super.paintComponent(g0);   // marco + título
         Graphics2D g = Estilo.suavizar(g0);
 
-        // Cuadro interior: mitad izquierda (avatar) y derecha (perfil)
+     
         RoundRectangle2D interior = new RoundRectangle2D.Float(15, 56, 639, 346, 14, 14);
         g.setColor(new Color(58, 28, 16, 235));
         g.fill(interior);
@@ -192,7 +188,7 @@ public class PanelPerfil extends VentanaModal {
         g.setColor(new Color(0xB08A5C));
         g.draw(interior);
 
-        // Avatar con resplandor
+
         g.setPaint(new RadialGradientPaint(new Point2D.Double(CENTRO_AVATAR_X, CENTRO_AVATAR_Y),
                 RADIO_AVATAR + 30f, new float[]{0.6f, 1f},
                 new Color[]{new Color(124, 108, 224, 190), new Color(124, 108, 224, 0)}));
@@ -204,7 +200,7 @@ public class PanelPerfil extends VentanaModal {
         g.draw(new Ellipse2D.Double(CENTRO_AVATAR_X - RADIO_AVATAR, CENTRO_AVATAR_Y - RADIO_AVATAR,
                 2 * RADIO_AVATAR, 2 * RADIO_AVATAR));
 
-        // Lado derecho
+  
         Font fTitulo = Estilo.fuente(Font.BOLD, 36);
         String t = "MI PERFIL";
         Estilo.dibujarTextoDegradado(g, t, fTitulo, 362, 106, new Color(0xF0D2A8), new Color(0xC79868), 2);
@@ -215,7 +211,7 @@ public class PanelPerfil extends VentanaModal {
         g.dispose();
     }
 
-    // Una fila del lado derecho: etiqueta (y valor en negrita si lo hay).
+
     private void franja(Graphics2D g, int y, String etiqueta, String valor, boolean sombreada) {
         if (sombreada) {
             g.setColor(new Color(255, 225, 190, 22));
