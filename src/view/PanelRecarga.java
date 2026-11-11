@@ -9,7 +9,7 @@ import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-// Ventana "RECARGAR SALDO": seis montos tomados de ControladorJuego.RECARGAS.
+
 public class PanelRecarga extends VentanaModal {
 
     public PanelRecarga(final ControladorJuego juego, final Runnable alRecargar, Runnable alCerrar) {
