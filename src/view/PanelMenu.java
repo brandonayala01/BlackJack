@@ -7,14 +7,13 @@ import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-// Menú principal: título dorado y los botones JUGAR / HISTORIAL / AJUSTES.
 public class PanelMenu extends PanelFieltro {
 
     private static final int ANCHO_BOTON = 380;
     private static final int ALTO_BOTON = 78;
 
     public PanelMenu(final VentanaPrincipal ventana) {
-        super(false);   // el menú no lleva barra de madera (como en el boceto)
+        super(false);  
 
         int x = (Estilo.ANCHO - ANCHO_BOTON) / 2;
         agregarBoton("JUGAR", x, 300, ventana, ControladorPrincipal.DESTINO_JUGAR);
@@ -36,10 +35,8 @@ public class PanelMenu extends PanelFieltro {
 
     @Override
     protected void paintComponent(Graphics g0) {
-        super.paintComponent(g0);   // fieltro
+        super.paintComponent(g0);  
         Graphics2D g = Estilo.suavizar(g0);
-
-        // Si la fuente del sistema es muy ancha, se reduce para que el título no se desborde.
         float tamano = 120;
         while (tamano > 60 && g.getFontMetrics(Estilo.fuente(Font.BOLD, tamano))
                 .stringWidth("BLACKJACK") > 620) {
