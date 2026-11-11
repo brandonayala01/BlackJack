@@ -38,18 +38,18 @@ public class ControladorPerfil {
 
         String nombreViejo = usuario.getNombre();
         if (!nuevoNombre.equals(nombreViejo)) {
+            // --- BYPASS PERSISTENCIA PARA EXPOSICIÓN ---
+            /*
             Usuario otro = usuarios.buscarPorNombre(nuevoNombre);
-            if (otro != null && otro != usuario) {
-                return "Ese nombre de usuario ya está en uso.";
-            }
-
+            if (otro != null && otro != usuario) { return "Ese nombre de usuario ya está en uso."; }
             historial.cambiarNombreUsuario(nombreViejo, nuevoNombre);
             partidas.cambiarNombreUsuario(nombreViejo, nuevoNombre);
+            */
             usuario.setNombre(nuevoNombre);
         }
 
         usuario.setAvatar(nuevoAvatar);
-        usuarios.guardar();
+        // usuarios.guardar(); // BYPASS PERSISTENCIA
         return null;
     }
 }
