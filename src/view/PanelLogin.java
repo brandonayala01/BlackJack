@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 import java.util.Arrays;
 import javax.swing.SwingConstants;
 
-// Pantalla "INICIAR SESIÓN". Los textos de error los entrega ControladorAutenticacion.
 public class PanelLogin extends PanelFieltro {
 
     private final VentanaPrincipal ventana;
@@ -59,7 +58,7 @@ public class PanelLogin extends PanelFieltro {
                 .alinearDerecha(Estilo.ANCHO - 30, 28);
         add(volver);
 
-        // --- Acciones ---
+
         ActionListener alIngresar = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -67,8 +66,8 @@ public class PanelLogin extends PanelFieltro {
             }
         };
         ingresar.addActionListener(alIngresar);
-        campoClave.addActionListener(alIngresar);          // Enter en la contraseña
-        campoUsuario.addActionListener(new ActionListener() {   // Enter en el usuario salta a la contraseña
+        campoClave.addActionListener(alIngresar);          
+        campoUsuario.addActionListener(new ActionListener() {  
             @Override
             public void actionPerformed(ActionEvent e) {
                 campoClave.requestFocusInWindow();
@@ -110,15 +109,15 @@ public class PanelLogin extends PanelFieltro {
         Arrays.fill(clave, ' ');
 
         if (error != null) {
-            campoClave.setText("");          // primero vaciar: esto dispara borrarError...
-            etiquetaError.setText(error);    // ...y por eso el mensaje se pone después
+            campoClave.setText("");          
+            etiquetaError.setText(error);    
             campoClave.requestFocusInWindow();
             return;
         }
         ventana.alIniciarSesion();
     }
 
-    // Se llama cada vez que la pantalla aparece: deja todo limpio.
+  
     public void alMostrar() {
         campoUsuario.setText("");
         campoClave.setText("");
