@@ -7,30 +7,43 @@ import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class PanelMenu extends PanelFieltro {
+public class PanelMenu extends PanelFieltro implements ActionListener {
 
     private static final int ANCHO_BOTON = 380;
     private static final int ALTO_BOTON = 78;
 
-    public PanelMenu(final VentanaPrincipal ventana) {
-        super(false);  
+    private final VentanaPrincipal ventana;
+    private final BotonMetalico jugar;
+    private final BotonMetalico historial;
+    private final BotonMetalico ajustes;
+
+    public PanelMenu(VentanaPrincipal ventana) {
+        super(false);
+        this.ventana = ventana;
 
         int x = (Estilo.ANCHO - ANCHO_BOTON) / 2;
-        agregarBoton("JUGAR", x, 300, ventana, ControladorPrincipal.DESTINO_JUGAR);
-        agregarBoton("HISTORIAL", x, 404, ventana, ControladorPrincipal.DESTINO_HISTORIAL);
-        agregarBoton("AJUSTES", x, 508, ventana, ControladorPrincipal.DESTINO_AJUSTES);
+        jugar = agregarBoton("JUGAR", x, 300);
+        historial = agregarBoton("HISTORIAL", x, 404);
+        ajustes = agregarBoton("AJUSTES", x, 508);
     }
 
-    private void agregarBoton(String texto, int x, int y, final VentanaPrincipal ventana,
-                              final String destino) {
+    private BotonMetalico agregarBoton(String texto, int x, int y) {
         BotonMetalico boton = new BotonMetalico(texto).tamanoTexto(46).ubicar(x, y, ANCHO_BOTON, ALTO_BOTON);
-        boton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ventana.elegirDesdeMenu(destino);
-            }
-        });
+        boton.addActionListener(this);
         add(boton);
+        return boton;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Object fuente = e.getSource();
+        if (fuente == jugar) {
+            ventana.elegirDesdeMenu(ControladorPrincipal.DESTINO_JUGAR);
+        } else if (fuente == historial) {
+            ventana.elegirDesdeMenu(ControladorPrincipal.DESTINO_HISTORIAL);
+        } else if (fuente == ajustes) {
+            ventana.elegirDesdeMenu(ControladorPrincipal.DESTINO_AJUSTES);
+        }
     }
 
     @Override

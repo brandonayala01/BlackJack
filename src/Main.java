@@ -1,10 +1,8 @@
-package runner;
-
 import controller.ControladorPrincipal;
 import javax.swing.SwingUtilities;
 import view.VentanaPrincipal;
 
-
+// Punto de entrada del juego. Ejecuta esta clase.
 public class Main {
 
     public static void main(String[] args) {

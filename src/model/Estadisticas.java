@@ -35,31 +35,7 @@ public class Estadisticas {
         return victorias * 100 / rondasJugadas;
     }
 
-    public int getRondasJugadas() {
-        return rondasJugadas;
-    }
-
-    public int getVictorias() {
-        return victorias;
-    }
-
-    public int getDerrotas() {
-        return derrotas;
-    }
-
-    public int getEmpates() {
-        return empates;
-    }
-
     public int getRachaActual() {
         return rachaActual;
-    }
-
-    public int getMejorRacha() {
-        return mejorRacha;
-    }
-
-    public int getGananciaTotal() {
-        return gananciaTotal;
     }
 }

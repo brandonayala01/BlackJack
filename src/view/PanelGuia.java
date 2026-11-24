@@ -7,7 +7,6 @@ import java.awt.FontMetrics;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.RoundRectangle2D;
 import java.util.Arrays;
@@ -36,23 +35,31 @@ public class PanelGuia extends VentanaModal {
         {"DIVIDIR (SPLIT):", "Si tienes dos cartas iguales, divídelas en dos manos independientes (apuesta adicional requerida)."}
     };
 
-    public PanelGuia(final Runnable alCerrar) {
+    private final BotonMetalico cerrar;
+    private final Runnable alCerrar;
+
+    public PanelGuia(Runnable alCerrar) {
         super(1066, 508, true);
+        this.alCerrar = alCerrar;
         setTitulo("GUÍA DE JUEGO", 36, 32, new Color(0xF8EEDA), new Color(0xD8C39C));
 
         TextoReglas reglas = new TextoReglas();
         reglas.setBounds(24, 98, 398, 318);
         add(reglas);
 
-        BotonMetalico cerrar = new BotonMetalico("CERRAR VENTANA", BotonMetalico.Tipo.MADERA)
+        cerrar = new BotonMetalico("CERRAR VENTANA", BotonMetalico.Tipo.MADERA)
                 .tamanoTexto(21).ubicar(443, 438, 180, 46);
-        cerrar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                alCerrar.run();
-            }
-        });
+        cerrar.addActionListener(this);
         add(cerrar);
+    }
+
+    @Override
+    public void actionPerformed(java.awt.event.ActionEvent e) {
+        if (e.getSource() == cerrar) {
+            alCerrar.run();
+        } else {
+            super.actionPerformed(e);
+        }
     }
 
     // ---------------------------------------------------------------

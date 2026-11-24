@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+
 public class RegistroPartida {
 
     private int id;
@@ -10,9 +12,12 @@ public class RegistroPartida {
     private int puntajeCrupier;
     private int ganancia;          
     private String resultado;     
+    private ArrayList<ArrayList<Carta>> cartasJugador;
+    private ArrayList<Carta> cartasCrupier;
 
     public RegistroPartida(int id, String nombreUsuario, String fechaHora, int apuesta,
-                        String manosJugador, int puntajeCrupier, int ganancia, String resultado) {
+                        String manosJugador, int puntajeCrupier, int ganancia, String resultado,
+                        ArrayList<ArrayList<Carta>> cartasJugador, ArrayList<Carta> cartasCrupier) {
         this.id = id;
         this.nombreUsuario = nombreUsuario;
         this.fechaHora = fechaHora;
@@ -21,6 +26,28 @@ public class RegistroPartida {
         this.puntajeCrupier = puntajeCrupier;
         this.ganancia = ganancia;
         this.resultado = resultado;
+        this.cartasJugador = cartasJugador;
+        this.cartasCrupier = cartasCrupier;
+    }
+
+    public boolean tieneCartas() {
+        return cartasJugador != null && cartasCrupier != null;
+    }
+
+    public ArrayList<ArrayList<Carta>> getCartasJugador() {
+        return cartasJugador;
+    }
+
+    public ArrayList<Carta> getCartasCrupier() {
+        return cartasCrupier;
+    }
+
+    public String getManosJugador() {
+        return manosJugador;
+    }
+
+    public int getPuntajeCrupier() {
+        return puntajeCrupier;
     }
 
     public void setNombreUsuario(String nombreUsuario) {
@@ -62,9 +89,5 @@ public class RegistroPartida {
 
     public int getGanancia() {
         return ganancia;
-    }
-
-    public String getResultado() {
-        return resultado;
     }
 }

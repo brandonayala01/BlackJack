@@ -76,10 +76,6 @@ public class ResultadoMano {
         return pago;
     }
 
-    public int getPuntajeJugador() {
-        return puntajeJugador;
-    }
-
     public int getPuntajeCrupier() {
         return puntajeCrupier;
     }

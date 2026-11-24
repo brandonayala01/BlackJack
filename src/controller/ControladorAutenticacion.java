@@ -6,13 +6,15 @@ import persistence.UsuarioRepositorio;
 public class ControladorAutenticacion {
 
     private UsuarioRepositorio usuarios;
-    private Usuario usuarioActual;
+    private Usuario usuarioActual;   // null mientras nadie haya iniciado sesión
 
     public ControladorAutenticacion(UsuarioRepositorio usuarios) {
         this.usuarios = usuarios;
         this.usuarioActual = null;
     }
 
+    // Revisa que un nombre de usuario sea válido. Devuelve el error o null.
+    // Es "static" para que ControladorPerfil también pueda usarla.
     public static String validarNombre(String nombre) {
         if (nombre.isEmpty()) {
             return "Escribe un nombre de usuario.";
@@ -26,29 +28,48 @@ public class ControladorAutenticacion {
         return null;
     }
 
+    // Intenta iniciar sesión. Devuelve el error o null si salió bien.
     public String iniciarSesion(String nombre, String contrasena) {
         nombre = nombre.trim();
         if (nombre.isEmpty() || contrasena.isEmpty()) {
             return "Escribe tu usuario y tu contraseña.";
         }
-
-        Usuario usuario = new Usuario(nombre, "demo@demo.com", contrasena);
-        usuario.agregarSaldo(1000);
-        
+        Usuario usuario = usuarios.iniciarSesion(nombre, contrasena);
+        if (usuario == null) {
+            // No decimos cuál de los dos datos falló, por seguridad.
+            return "Usuario o contraseña incorrectos.";
+        }
         usuarioActual = usuario;
         return null;
     }
 
+    // Crea una cuenta nueva y deja la sesión iniciada. Devuelve el error o null.
     public String registrar(String nombre, String correo, String contrasena, String confirmacion) {
         nombre = nombre.trim();
         correo = correo.trim();
 
         String error = validarNombre(nombre);
-        if (error != null) return error;
+        if (error != null) {
+            return error;
+        }
+        if (!correo.matches("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}")) {
+            return "Escribe un correo electrónico válido.";
+        }
+        if (contrasena.length() < 6) {
+            return "La contraseña debe tener al menos 6 caracteres.";
+        }
+        if (!contrasena.equals(confirmacion)) {
+            return "Las contraseñas no coinciden.";
+        }
+        if (usuarios.existeNombre(nombre)) {
+            return "Ese nombre de usuario ya está en uso.";
+        }
+        if (usuarios.existeCorreo(correo)) {
+            return "Ese correo ya está registrado.";
+        }
 
         Usuario nuevo = new Usuario(nombre, correo, contrasena);
-        nuevo.agregarSaldo(1000); 
-        
+        usuarios.agregar(nuevo);
         usuarioActual = nuevo;
         return null;
     }

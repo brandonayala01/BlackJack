@@ -18,11 +18,12 @@ import javax.swing.JButton;
 //  - Tipo.METAL  : gris metálico con texto gris claro (JUGAR, INGRESAR, HIT...)
 //  - Tipo.DORADO : igual pero con texto dorado (REGISTRARSE)
 //  - Tipo.MADERA : madera con texto crema (ventanas: SIGUIENTE RONDA, CERRAR...)
+//  - Tipo.FICHA  : ficha de casino redonda; el texto es su valor ("25")
 // Para texto en dos líneas (HIT / (PEDIR)) separa con "\n":  new BotonMetalico("HIT\n(PEDIR)")
 public class BotonMetalico extends JButton {
 
     public enum Tipo {
-        METAL, DORADO, MADERA
+        METAL, DORADO, MADERA, FICHA
     }
 
     private static final int ARCO = 16;
@@ -93,6 +94,13 @@ public class BotonMetalico extends JButton {
 
         if (!activo) {
             Estilo.atenuar(g, 0.45f);
+        }
+
+        if (tipo == Tipo.FICHA) {
+            int tam = Math.min(w, h) - 6;
+            Estilo.dibujarFicha(g, (w - tam) / 2, sobre ? 0 : 3, tam, Integer.parseInt(getText()));
+            g.dispose();
+            return;
         }
 
         // 1) Sombra proyectada

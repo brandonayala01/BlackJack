@@ -16,7 +16,10 @@ import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
 
-public class VentanaModal extends JComponent {
+public class VentanaModal extends JComponent implements ActionListener {
+
+    private JButton botonX;
+    private Runnable alCerrarX;
 
     private final boolean translucida;
 
@@ -46,6 +49,7 @@ public class VentanaModal extends JComponent {
 
 
     protected void agregarCerrar(final Runnable alCerrar) {
+        alCerrarX = alCerrar;
         JButton x = new JButton() {
             @Override
             protected void paintComponent(Graphics g0) {
@@ -65,12 +69,8 @@ public class VentanaModal extends JComponent {
         x.setOpaque(false);
         x.setRolloverEnabled(true);
         x.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        x.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                alCerrar.run();
-            }
-        });
+        x.addActionListener(this);
+        botonX = x;
         add(x);
 
         getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ESCAPE"), "cerrarVentana");
@@ -108,5 +108,12 @@ public class VentanaModal extends JComponent {
                     tituloArriba, tituloAbajo, 3);
         }
         g.dispose();
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == botonX) {
+            alCerrarX.run();
+        }
     }
 }

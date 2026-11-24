@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 import java.util.Arrays;
 import javax.swing.SwingConstants;
 
-public class PanelLogin extends PanelFieltro {
+public class PanelLogin extends PanelFieltro implements ActionListener {
 
     private final VentanaPrincipal ventana;
     private final ControladorAutenticacion autenticacion;
@@ -14,6 +14,9 @@ public class PanelLogin extends PanelFieltro {
     private final CampoTexto campoUsuario = new CampoTexto();
     private final CampoClave campoClave = new CampoClave();
     private final Etiqueta etiquetaError;
+    private final BotonMetalico ingresar;
+    private final BotonMetalico registrarse;
+    private final BotonEnlace volver;
 
     public PanelLogin(VentanaPrincipal ventana, ControladorAutenticacion autenticacion) {
         super(true);
@@ -37,7 +40,7 @@ public class PanelLogin extends PanelFieltro {
         campoClave.setBounds(430, 370, 380, 42);
         add(campoClave);
 
-        BotonMetalico ingresar = new BotonMetalico("INGRESAR").tamanoTexto(40).ubicar(420, 430, 400, 74);
+        ingresar = new BotonMetalico("INGRESAR").tamanoTexto(40).ubicar(420, 430, 400, 74);
         add(ingresar);
 
         etiquetaError = new Etiqueta("", 22, Estilo.iluminar(Estilo.ROJO, 30), true);
@@ -50,41 +53,20 @@ public class PanelLogin extends PanelFieltro {
         nuevo.setBounds(430, 566, 380, 34);
         add(nuevo);
 
-        BotonMetalico registrarse = new BotonMetalico("REGISTRARSE", BotonMetalico.Tipo.DORADO)
+        registrarse = new BotonMetalico("REGISTRARSE", BotonMetalico.Tipo.DORADO)
                 .tamanoTexto(40).ubicar(422, 604, 400, 74);
         add(registrarse);
 
-        BotonEnlace volver = new BotonEnlace("\u2039 MENÚ PRINCIPAL", 24, Estilo.CREMA, false)
+        volver = new BotonEnlace("\u2039 MENÚ PRINCIPAL", 24, Estilo.CREMA, false)
                 .alinearDerecha(Estilo.ANCHO - 30, 28);
         add(volver);
 
 
-        ActionListener alIngresar = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ingresar();
-            }
-        };
-        ingresar.addActionListener(alIngresar);
-        campoClave.addActionListener(alIngresar);          
-        campoUsuario.addActionListener(new ActionListener() {  
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                campoClave.requestFocusInWindow();
-            }
-        });
-        registrarse.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                PanelLogin.this.ventana.mostrarRegistro();
-            }
-        });
-        volver.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                PanelLogin.this.ventana.mostrarMenu();
-            }
-        });
+        ingresar.addActionListener(this);
+        campoClave.addActionListener(this);
+        campoUsuario.addActionListener(this);
+        registrarse.addActionListener(this);
+        volver.addActionListener(this);
 
         OyenteTexto borrarError = new OyenteTexto() {
             @Override
@@ -101,6 +83,20 @@ public class PanelLogin extends PanelFieltro {
                 PanelLogin.this.ventana.mostrarMenu();
             }
         });
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Object fuente = e.getSource();
+        if (fuente == ingresar || fuente == campoClave) {
+            ingresar();
+        } else if (fuente == campoUsuario) {
+            campoClave.requestFocusInWindow();
+        } else if (fuente == registrarse) {
+            ventana.mostrarRegistro();
+        } else if (fuente == volver) {
+            ventana.mostrarMenu();
+        }
     }
 
     private void ingresar() {

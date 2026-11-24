@@ -7,7 +7,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -21,9 +20,15 @@ public class PanelResultado extends VentanaModal {
     private final String detalle;
     private final String saldoTexto;
     private final String detalleManos;
+    private final BotonMetalico bSiguiente;
+    private final BotonMetalico bMenu;
+    private final Runnable siguiente;
+    private final Runnable menu;
 
-    public PanelResultado(Ronda ronda, Usuario usuario, final Runnable siguiente, final Runnable menu) {
+    public PanelResultado(Ronda ronda, Usuario usuario, Runnable siguiente, Runnable menu) {
         super(610, 390, true);
+        this.siguiente = siguiente;
+        this.menu = menu;
 
         int neta = ronda.getGananciaNeta();
         Color arriba;
@@ -58,25 +63,27 @@ public class PanelResultado extends VentanaModal {
             detalleManos = "";
         }
 
-        BotonMetalico bSiguiente = new BotonMetalico("SIGUIENTE RONDA", BotonMetalico.Tipo.MADERA)
+        bSiguiente = new BotonMetalico("SIGUIENTE RONDA", BotonMetalico.Tipo.MADERA)
                 .tamanoTexto(24).ubicar(22, 306, 272, 58);
-        bSiguiente.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                siguiente.run();
-            }
-        });
+        bSiguiente.addActionListener(this);
         add(bSiguiente);
 
-        BotonMetalico bMenu = new BotonMetalico("VOLVER AL MENÚ PRINCIPAL", BotonMetalico.Tipo.MADERA)
+        bMenu = new BotonMetalico("VOLVER AL MENÚ PRINCIPAL", BotonMetalico.Tipo.MADERA)
                 .tamanoTexto(24).ubicar(316, 306, 272, 58);
-        bMenu.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                menu.run();
-            }
-        });
+        bMenu.addActionListener(this);
         add(bMenu);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Object fuente = e.getSource();
+        if (fuente == bSiguiente) {
+            siguiente.run();
+        } else if (fuente == bMenu) {
+            menu.run();
+        } else {
+            super.actionPerformed(e);
+        }
     }
 
     @Override

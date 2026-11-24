@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 import java.util.Arrays;
 import javax.swing.SwingConstants;
 
-public class PanelRegistro extends PanelFieltro {
+public class PanelRegistro extends PanelFieltro implements ActionListener {
 
     private final VentanaPrincipal ventana;
     private final ControladorAutenticacion autenticacion;
@@ -16,6 +16,9 @@ public class PanelRegistro extends PanelFieltro {
     private final CampoClave campoClave = new CampoClave();
     private final CampoClave campoConfirmar = new CampoClave();
     private final Etiqueta etiquetaError;
+    private final BotonMetalico registrarse;
+    private final BotonEnlace iniciar;
+    private final BotonEnlace volver;
 
     public PanelRegistro(VentanaPrincipal ventana, ControladorAutenticacion autenticacion) {
         super(true);
@@ -32,7 +35,7 @@ public class PanelRegistro extends PanelFieltro {
         agregarCampo("CONTRASEÑA", campoClave, 380);
         agregarCampo("CONFIRMAR CONTRASEÑA", campoConfirmar, 460);
 
-        BotonMetalico registrarse = new BotonMetalico("REGISTRARSE", BotonMetalico.Tipo.DORADO)
+        registrarse = new BotonMetalico("REGISTRARSE", BotonMetalico.Tipo.DORADO)
                 .tamanoTexto(40).ubicar(420, 518, 400, 74);
         add(registrarse);
 
@@ -46,39 +49,22 @@ public class PanelRegistro extends PanelFieltro {
         yaTienes.setBounds(430, 628, 380, 32);
         add(yaTienes);
 
-        BotonEnlace iniciar = new BotonEnlace("INICIAR SESIÓN", 26, Estilo.DORADO, true)
+        iniciar = new BotonEnlace("INICIAR SESIÓN", 26, Estilo.DORADO, true)
                 .centrarEn(620, 658);
         add(iniciar);
 
-        BotonEnlace volver = new BotonEnlace("\u2039 MENÚ PRINCIPAL", 24, Estilo.CREMA, false)
+        volver = new BotonEnlace("\u2039 MENÚ PRINCIPAL", 24, Estilo.CREMA, false)
                 .alinearDerecha(Estilo.ANCHO - 30, 28);
         add(volver);
 
 
-        ActionListener alRegistrar = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                registrar();
-            }
-        };
-        registrarse.addActionListener(alRegistrar);
-        campoConfirmar.addActionListener(alRegistrar);  
-        encadenarEnter(campoUsuario, campoCorreo);
-        encadenarEnter(campoCorreo, campoClave);
-        encadenarEnter(campoClave, campoConfirmar);
-
-        iniciar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                PanelRegistro.this.ventana.mostrarLogin();
-            }
-        });
-        volver.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                PanelRegistro.this.ventana.mostrarMenu();
-            }
-        });
+        registrarse.addActionListener(this);
+        campoUsuario.addActionListener(this);
+        campoCorreo.addActionListener(this);
+        campoClave.addActionListener(this);
+        campoConfirmar.addActionListener(this);
+        iniciar.addActionListener(this);
+        volver.addActionListener(this);
 
         OyenteTexto borrarError = new OyenteTexto() {
             @Override
@@ -107,13 +93,22 @@ public class PanelRegistro extends PanelFieltro {
         add(campo);
     }
 
-    private void encadenarEnter(javax.swing.JTextField origen, final javax.swing.JTextField destino) {
-        origen.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                destino.requestFocusInWindow();
-            }
-        });
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Object fuente = e.getSource();
+        if (fuente == registrarse || fuente == campoConfirmar) {
+            registrar();
+        } else if (fuente == campoUsuario) {
+            campoCorreo.requestFocusInWindow();
+        } else if (fuente == campoCorreo) {
+            campoClave.requestFocusInWindow();
+        } else if (fuente == campoClave) {
+            campoConfirmar.requestFocusInWindow();
+        } else if (fuente == iniciar) {
+            ventana.mostrarLogin();
+        } else if (fuente == volver) {
+            ventana.mostrarMenu();
+        }
     }
 
     private void registrar() {

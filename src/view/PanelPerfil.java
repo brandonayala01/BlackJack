@@ -10,7 +10,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RadialGradientPaint;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
@@ -34,20 +33,33 @@ public class PanelPerfil extends VentanaModal {
 
     private final CampoTexto campoNombre;
     private final Etiqueta mensaje;
+    private final JButton flechaIzquierda;
+    private final JButton flechaDerecha;
+    private final BotonMetalico sesion;
+    private final BotonMetalico cerrar;
+    private final BotonMetalico guardar;
+    private final Runnable alGuardar;
+    private final Runnable alCerrarMenu;
+    private final Runnable alCerrarSesion;
 
-    public PanelPerfil(Usuario usuario, ControladorPerfil controlador, final Runnable alGuardar,
-                       Runnable alCerrarX, final Runnable alCerrarMenu, final Runnable alCerrarSesion) {
+    public PanelPerfil(Usuario usuario, ControladorPerfil controlador, Runnable alGuardar,
+                       Runnable alCerrarX, Runnable alCerrarMenu, Runnable alCerrarSesion) {
         super(675, 478, true);
         this.usuario = usuario;
         this.controlador = controlador;
         this.estadisticas = usuario.getEstadisticas();
         this.avatar = usuario.getAvatar();
+        this.alGuardar = alGuardar;
+        this.alCerrarMenu = alCerrarMenu;
+        this.alCerrarSesion = alCerrarSesion;
         setTitulo("PERFIL Y AJUSTES DE GUARDADO", 36, 30, new Color(0xF8EEDA), new Color(0xD8C39C));
         agregarCerrar(alCerrarX);
 
        
-        add(crearFlecha(true));
-        add(crearFlecha(false));
+        flechaIzquierda = crearFlecha(true);
+        flechaDerecha = crearFlecha(false);
+        add(flechaIzquierda);
+        add(flechaDerecha);
 
        
         campoNombre = new CampoTexto() {
@@ -74,38 +86,47 @@ public class PanelPerfil extends VentanaModal {
         });
 
         
-        BotonMetalico sesion = new BotonMetalico("CERRAR SESIÓN", BotonMetalico.Tipo.MADERA)
+        sesion = new BotonMetalico("CERRAR SESIÓN", BotonMetalico.Tipo.MADERA)
                 .tamanoTexto(22).ubicar(366, 306, 264, 46);
-        sesion.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                alCerrarSesion.run();
-            }
-        });
+        sesion.addActionListener(this);
         add(sesion);
 
-        BotonMetalico cerrar = new BotonMetalico("CERRAR VENTANA", BotonMetalico.Tipo.MADERA)
+        cerrar = new BotonMetalico("CERRAR VENTANA", BotonMetalico.Tipo.MADERA)
                 .tamanoTexto(21).ubicar(142, 412, 184, 46);
-        cerrar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                alCerrarMenu.run();
-            }
-        });
+        cerrar.addActionListener(this);
         add(cerrar);
 
-        BotonMetalico guardar = new BotonMetalico("GUARDAR CAMBIOS", BotonMetalico.Tipo.MADERA)
+        guardar = new BotonMetalico("GUARDAR CAMBIOS", BotonMetalico.Tipo.MADERA)
                 .tamanoTexto(21).ubicar(340, 412, 184, 46);
-        guardar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                guardar(alGuardar);
-            }
-        });
+        guardar.addActionListener(this);
         add(guardar);
     }
 
-    private void guardar(Runnable alGuardar) {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Object fuente = e.getSource();
+        if (fuente == sesion) {
+            alCerrarSesion.run();
+        } else if (fuente == cerrar) {
+            alCerrarMenu.run();
+        } else if (fuente == guardar) {
+            guardar();
+        } else if (fuente == flechaIzquierda) {
+            cambiarAvatar(controlador.anteriorAvatar(avatar));
+        } else if (fuente == flechaDerecha) {
+            cambiarAvatar(controlador.siguienteAvatar(avatar));
+        } else {
+            super.actionPerformed(e);
+        }
+    }
+
+    private void cambiarAvatar(int nuevo) {
+        avatar = nuevo;
+        mensaje.setText("");
+        repaint();
+    }
+
+    private void guardar() {
         String error = controlador.guardarCambios(usuario, campoNombre.getText(), avatar);
         if (error != null) {
             mensaje.setForeground(Estilo.iluminar(Estilo.ROJO, 30));
@@ -144,14 +165,7 @@ public class PanelPerfil extends VentanaModal {
         b.setOpaque(false);
         b.setRolloverEnabled(true);
         b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        b.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                avatar = izquierda ? controlador.anteriorAvatar(avatar) : controlador.siguienteAvatar(avatar);
-                mensaje.setText("");
-                repaint();
-            }
-        });
+        b.addActionListener(this);
         return b;
     }
 

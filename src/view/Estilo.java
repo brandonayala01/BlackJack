@@ -30,13 +30,14 @@ import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.JTextField;
 
-
+// Colores, fuentes y funciones de dibujo que comparte TODA la interfaz.
+// Aquí se define el "look" del juego: fieltro verde, madera, dorado y metal.
 public final class Estilo {
 
     private Estilo() {
     }
 
-    
+    // Tamaño fijo de la ventana (misma proporción 16:9 de los bocetos).
     public static final int ANCHO = 1280;
     public static final int ALTO = 760;
     public static final int ALTO_BARRA = 92;
@@ -49,7 +50,6 @@ public final class Estilo {
 
     public static final Color MADERA_CLARA = new Color(0x7C4029);
     public static final Color MADERA = new Color(0x6A3523);
-    public static final Color MADERA_OSCURA = new Color(0x3F1E12);
 
     public static final Color DORADO_CLARO = new Color(0xF4D98A);
     public static final Color DORADO = new Color(0xE2B65A);
@@ -65,7 +65,9 @@ public final class Estilo {
     // ---------------------------------------------------------------
     // FUENTES
     // ---------------------------------------------------------------
-    
+    // Se usa la primera fuente "condensada" que tenga el computador.
+    // Si quieres el look exacto de los bocetos, instala "Oswald" o
+    // "Roboto Condensed" (gratis en Google Fonts).
     private static final String[] CONDENSADAS = {
         "Bahnschrift SemiBold Condensed", "Bahnschrift Condensed", "Oswald",
         "Roboto Condensed", "Arial Narrow", "DejaVu Sans Condensed", "Dialog"
@@ -75,7 +77,8 @@ public final class Estilo {
         "Lucida Calligraphy", "URW Chancery L", "Serif"
     };
 
-    
+    // Si pones archivos .ttf u .otf en una carpeta "fuentes" junto al proyecto
+    // (por ejemplo Oswald o Roboto Condensed de Google Fonts), el juego los usa solo.
     private static final String FAMILIA_INCLUIDA = cargarFuentesIncluidas();
     private static final String FAMILIA = FAMILIA_INCLUIDA != null
             ? FAMILIA_INCLUIDA : elegirFamilia(CONDENSADAS);
@@ -116,12 +119,13 @@ public final class Estilo {
         return candidatas[candidatas.length - 1];
     }
 
-    
+    // estilo: Font.PLAIN o Font.BOLD
     public static Font fuente(int estilo, float tamano) {
         return new Font(FAMILIA, estilo, 12).deriveFont(tamano);
     }
 
-    
+    // Mayor tamaño (hasta tamMax) con el que "texto" cabe en anchoMax píxeles.
+    // Sirve para que los textos no se salgan de sus cuadros con fuentes anchas.
     public static float tamanoQueCabe(Graphics2D g, int estilo, float tamMax, int anchoMax, String texto) {
         float tam = tamMax;
         while (tam > 12 && g.getFontMetrics(fuente(estilo, tam)).stringWidth(texto) > anchoMax) {
@@ -139,7 +143,7 @@ public final class Estilo {
     // UTILIDADES DE DIBUJO
     // ---------------------------------------------------------------
 
-    
+    // Activa el suavizado de bordes y texto en un Graphics2D.
     public static void suavizado(Graphics2D g) {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -148,7 +152,7 @@ public final class Estilo {
         g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
     }
 
-    
+    // Copia del Graphics con suavizado (acuérdate de llamar dispose()).
     public static Graphics2D suavizar(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();
         suavizado(g2);
@@ -166,7 +170,7 @@ public final class Estilo {
                 c.getAlpha());
     }
 
-    
+    // Texto liso con una sombra suave debajo.
     public static void dibujarTextoSombra(Graphics2D g, String texto, Font fuente, Color color, int x, int y) {
         g.setFont(fuente);
         g.setColor(new Color(0, 0, 0, 130));
@@ -175,7 +179,7 @@ public final class Estilo {
         g.drawString(texto, x, y);
     }
 
-    
+    // Texto con degradado vertical (dorado, madera clara...), sombra y contorno fino.
     public static void dibujarTextoDegradado(Graphics2D g, String texto, Font fuente, int x, int y,
                                              Color arriba, Color abajo, int sombra) {
         GlyphVector gv = fuente.createGlyphVector(g.getFontRenderContext(), texto);
@@ -194,7 +198,7 @@ public final class Estilo {
         g.draw(forma);
     }
 
-    
+    // Título grande dorado centrado en centroX (menú principal).
     public static void dibujarTituloDorado(Graphics2D g, String texto, int centroX, int baseline, float tamano) {
         Font f = fuente(Font.BOLD, tamano);
         int ancho = g.getFontMetrics(f).stringWidth(texto);
@@ -202,7 +206,7 @@ public final class Estilo {
                 new Color(0xF6E19A), new Color(0xB4822E), 4);
     }
 
-    
+    // Logo "BLACKJACK Royale" de la barra de madera.
     public static void dibujarLogo(Graphics2D g, int x, int baseline) {
         Font f1 = fuente(Font.BOLD, 50);
         dibujarTextoDegradado(g, "BLACKJACK", f1, x, baseline,
@@ -250,7 +254,7 @@ public final class Estilo {
     // MADERA
     // ---------------------------------------------------------------
 
-    
+    // Rellena cualquier forma (rectángulo, rectángulo redondeado...) con madera.
     public static void dibujarMadera(Graphics2D g0, Shape forma) {
         Graphics2D g = (Graphics2D) g0.create();
         suavizado(g);
@@ -283,7 +287,7 @@ public final class Estilo {
         g.dispose();
     }
 
-    
+    // Barra de madera superior con el logo.
     public static void dibujarBarra(Graphics2D g, int w) {
         dibujarMadera(g, new Rectangle(0, 0, w, ALTO_BARRA));
         g.setColor(new Color(30, 12, 6, 200));
@@ -294,7 +298,7 @@ public final class Estilo {
         dibujarLogo(g, 34, 68);
     }
 
-    
+    // Panel de madera con esquinas redondeadas y borde (cuadros de la mesa y ventanas).
     public static void dibujarPanelMadera(Graphics2D g, int x, int y, int w, int h, int arco) {
         RoundRectangle2D forma = new RoundRectangle2D.Float(x, y, w, h, arco, arco);
         g.setColor(new Color(0, 0, 0, 90));
@@ -345,7 +349,52 @@ public final class Estilo {
         g.dispose();
     }
 
-    
+    // Atenúa lo que se dibuje después (botones deshabilitados).
+    // Ficha de casino redonda: color según el valor, rayas blancas y el número en el centro.
+    public static void dibujarFicha(Graphics2D g, int x, int y, int tam, int valor) {
+        Color base;
+        if (valor >= 100) {
+            base = new Color(0x2A2A2A);
+        } else if (valor >= 50) {
+            base = new Color(0xD9822B);
+        } else if (valor >= 25) {
+            base = new Color(0x23894A);
+        } else if (valor >= 10) {
+            base = new Color(0x2557A8);
+        } else if (valor >= 5) {
+            base = new Color(0xB8282E);
+        } else {
+            base = new Color(0x8C8C8C);
+        }
+
+        g.setColor(new Color(0, 0, 0, 90));
+        g.fillOval(x + 2, y + 3, tam, tam);
+        g.setColor(base);
+        g.fillOval(x, y, tam, tam);
+
+        g.setColor(Color.WHITE);
+        g.setStroke(new BasicStroke(Math.max(2f, tam / 9f)));
+        for (int i = 0; i < 6; i++) {
+            g.drawArc(x + tam / 14, y + tam / 14, tam - tam / 7, tam - tam / 7, i * 60, 22);
+        }
+
+        int interior = (int) (tam * 0.62);
+        int margen = (tam - interior) / 2;
+        g.setColor(base.darker());
+        g.fillOval(x + margen, y + margen, interior, interior);
+        g.setStroke(new BasicStroke(1.2f));
+        g.setColor(new Color(255, 255, 255, 170));
+        g.drawOval(x + margen, y + margen, interior, interior);
+
+        String texto = String.valueOf(valor);
+        Font f = fuente(Font.BOLD, Math.max(9, tam / (texto.length() > 2 ? 4 : 3)));
+        FontMetrics fm = g.getFontMetrics(f);
+        g.setFont(f);
+        g.setColor(Color.WHITE);
+        g.drawString(texto, x + (tam - fm.stringWidth(texto)) / 2,
+                y + (tam + fm.getAscent() - fm.getDescent()) / 2);
+    }
+
     public static void atenuar(Graphics2D g, float opacidad) {
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacidad));
     }

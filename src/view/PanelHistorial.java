@@ -7,12 +7,12 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.event.ActionListener;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.Locale;
+import model.Carta;
 import model.Estadisticas;
 import model.RegistroPartida;
 import model.Usuario;
@@ -31,9 +31,11 @@ public class PanelHistorial extends VentanaModal {
 
     private final Estadisticas estadisticas;
     private final int saldo;
+    private final BotonMetalico cerrar;
+    private final Runnable alCerrar;
 
     public PanelHistorial(Usuario usuario, ControladorHistorial controlador,
-                          final Runnable alCerrar) {
+                          Runnable alCerrar) {
         super(1202, 560, true);
         setTitulo("HISTORIAL Y ESTADÍSTICAS", 44, 34, new Color(0xF8EEDA), new Color(0xD8C39C));
 
@@ -44,15 +46,20 @@ public class PanelHistorial extends VentanaModal {
         tabla.setBounds(TABLA_X + 6, PANEL_Y + 6, TABLA_ANCHO - 12, PANEL_ALTO - 12);
         add(tabla);
 
-        BotonMetalico cerrar = new BotonMetalico("CERRAR VENTANA", BotonMetalico.Tipo.MADERA)
+        this.alCerrar = alCerrar;
+        cerrar = new BotonMetalico("CERRAR VENTANA", BotonMetalico.Tipo.MADERA)
                 .tamanoTexto(22).ubicar(510, 492, 182, 46);
-        cerrar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                alCerrar.run();
-            }
-        });
+        cerrar.addActionListener(this);
         add(cerrar);
+    }
+
+    @Override
+    public void actionPerformed(java.awt.event.ActionEvent e) {
+        if (e.getSource() == cerrar) {
+            alCerrar.run();
+        } else {
+            super.actionPerformed(e);
+        }
     }
 
     // ---------------------------------------------------------------
@@ -174,13 +181,14 @@ public class PanelHistorial extends VentanaModal {
     private static class TablaHistorial extends VistaDesplazable {
 
         private static final String[][] TITULOS = {
-            {"ID DE RONDA", ""}, {"HORA/FECHA", ""}, {"APUESTA", "(Fichas)"},
+            {"ID", "RONDA"}, {"HORA/FECHA", ""}, {"APUESTA", "(Fichas)"},
             {"MANO", "JUGADOR/DEALER"}, {"RESULTADO", "(+/- Fichas)"}
         };
         // El viewport reserva 18 px para el scroll: las columnas llenan
         // exactamente los 580 px útiles y ya no se corta el resultado.
-        private static final int[] COLUMNAS = {90, 154, 76, 154, 106};
-        private static final int ALTO_FILA = 38;
+        private static final int[] COLUMNAS = {62, 120, 66, 240, 92};
+        private static final int ALTO_FILA = 66;
+        private static final int COLUMNA_MANO = 3;
         private static final int ALTO_CABECERA = 54;
 
         private final ArrayList<RegistroPartida> registros;
@@ -254,6 +262,11 @@ public class PanelHistorial extends VentanaModal {
                     r.getTextoMano(), r.getTextoResultado()};
                 int x = 0;
                 for (int c = 0; c < COLUMNAS.length; c++) {
+                    if (c == COLUMNA_MANO && r.tieneCartas()) {
+                        pintarManos(g, r, x, y);
+                        x += COLUMNAS[c];
+                        continue;
+                    }
                     float tam = Estilo.tamanoQueCabe(g, Font.PLAIN, 21, COLUMNAS[c] - 8, celdas[c]);
                     Font f = Estilo.fuente(Font.PLAIN, tam);
                     FontMetrics fm = g.getFontMetrics(f);
@@ -263,6 +276,44 @@ public class PanelHistorial extends VentanaModal {
                     x += COLUMNAS[c];
                 }
             }
+        }
+
+        private void pintarManos(Graphics2D g, RegistroPartida r, int x, int y) {
+            ArrayList<ArrayList<Carta>> manos = r.getCartasJugador();
+            pintarFilaCartas(g, "TÚ", manos, r.getManosJugador(), x, y + 4);
+
+            ArrayList<ArrayList<Carta>> crupier = new ArrayList<ArrayList<Carta>>();
+            crupier.add(r.getCartasCrupier());
+            pintarFilaCartas(g, "DEALER", crupier, String.valueOf(r.getPuntajeCrupier()), x, y + 32);
+        }
+
+        private void pintarFilaCartas(Graphics2D g, String etiqueta, ArrayList<ArrayList<Carta>> manos,
+                                      String puntaje, int x, int y) {
+            Font fEtiqueta = Estilo.fuente(Font.BOLD, 12);
+            g.setFont(fEtiqueta);
+            g.setColor(new Color(0xE2B88A));
+            g.drawString(etiqueta, x + 6, y + 24);
+
+            Font fCarta = Estilo.fuente(Font.BOLD, 18);
+            g.setFont(fCarta);
+            FontMetrics fm = g.getFontMetrics();
+            int cursor = x + 62;
+            for (int m = 0; m < manos.size(); m++) {
+                if (m > 0) {
+                    g.setColor(Estilo.CREMA);
+                    g.drawString("|", cursor, y + 24);
+                    cursor += fm.stringWidth("| ");
+                }
+                for (Carta carta : manos.get(m)) {
+                    String texto = carta.getValor() + carta.getSimboloPalo();
+                    g.setColor(carta.esRoja() ? new Color(0xFF8A80) : Color.WHITE);
+                    g.drawString(texto, cursor, y + 24);
+                    cursor += fm.stringWidth(texto + " ");
+                }
+            }
+
+            Estilo.dibujarTextoSombra(g, "= " + puntaje, Estilo.fuente(Font.BOLD, 17), Estilo.TEXTO_SUAVE,
+                    cursor + 2, y + 24);
         }
     }
 }

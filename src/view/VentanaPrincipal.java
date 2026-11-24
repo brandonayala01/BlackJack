@@ -66,7 +66,6 @@ public class VentanaPrincipal extends JFrame {
     }
 
     public void mostrarRegistro() {
-        panelRegistro.alMostrar();
         cartas.show(contenedor, REGISTRO);
         panelRegistro.alMostrar();
     }

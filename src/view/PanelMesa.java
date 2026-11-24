@@ -20,20 +20,24 @@ import java.util.Locale;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.SwingConstants;
-import hilos.HiloAnimacion;
-import hilos.HiloCrupier;
-import hilos.HiloReparto;
-import hilos.HiloResultado;
+import javax.swing.SwingUtilities;
 import model.Ronda;
 import model.Usuario;
 
-public class PanelMesa extends PanelFieltro {
+// La mesa de juego. Dibuja el estado de la Ronda (modelo) y traduce los clics a
+// llamadas de ControladorJuego. Nunca decide reglas: solo pregunta a la Ronda
+// (puedePedir(), puedeDividir()...) para habilitar o deshabilitar botones.
+public class PanelMesa extends PanelFieltro implements ActionListener {
+
+    private static final int RETARDO_REPARTO = 260;     // ms entre cartas del reparto
+    private static final int RETARDO_CRUPIER = 800;     // ms entre cartas del crupier
+    private static final int RETARDO_RESULTADO = 1000;  // ms antes de mostrar el resultado
 
     private final VentanaPrincipal ventana;
     private ControladorJuego juego;
     private Usuario usuario;
 
-
+    // --- Componentes ---
     private final Etiqueta etiquetaNombre = new Etiqueta("", 30, Estilo.TEXTO, false);
     private final Etiqueta etiquetaMensaje = new Etiqueta("", 19, new Color(0xE6DCC4), false);
     private final BotonSaldo botonSaldo = new BotonSaldo();
@@ -47,15 +51,17 @@ public class PanelMesa extends PanelFieltro {
     private final BotonMetalico botonDividir = new BotonMetalico("SPLIT\n(DIVIDIR)");
     private final BotonMetalico botonLimpiar = new BotonMetalico("LIMPIAR");
     private final BotonMetalico botonRepartir = new BotonMetalico("REPARTIR", BotonMetalico.Tipo.DORADO);
-    private final BotonFicha[] botonesFicha = new BotonFicha[ControladorJuego.FICHAS.length];
-    private final AvatarMesa avatarMesa = new AvatarMesa();
-    private final PilaFichas pilaFichas = new PilaFichas();
+    private final BotonMetalico[] botonesFicha = new BotonMetalico[ControladorJuego.FICHAS.length];
+    private final BotonEnlace volver = new BotonEnlace("\u2039 MENÚ", 24, Estilo.CREMA, false);
+    private final BotonMetalico guia = new BotonMetalico("?");
 
     private final CapaModal capa = new CapaModal();
 
-    private HiloAnimacion hiloReparto;
-    private HiloAnimacion hiloCrupier;
-    private HiloAnimacion hiloResultado;
+    // --- Animaciones (hilos) ---
+    private Thread hiloReparto;
+    private Thread hiloCrupier;
+    private Thread hiloResultado;
+    private boolean crupierSigue;
     private int pasoReparto;
     private int limiteJugador = -1;
     private int limiteCrupier = -1;
@@ -65,26 +71,16 @@ public class PanelMesa extends PanelFieltro {
         super(true);
         this.ventana = ventana;
 
-
-        BotonEnlace volver = new BotonEnlace("\u2039 MENÚ", 24, Estilo.CREMA, false)
-                .alinearDerecha(1190, 28);
-        volver.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                PanelMesa.this.ventana.volverAlMenu();
-            }
-        });
+        // ---- Barra superior: menú y guía ----
+        volver.alinearDerecha(1190, 28);
+        volver.addActionListener(this);
         add(volver);
 
-        BotonMetalico guia = new BotonMetalico("?").tamanoTexto(32).ubicar(1204, 22, 48, 50);
-        guia.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                abrirGuia();
-            }
-        });
+        guia.tamanoTexto(32).ubicar(1204, 22, 48, 50);
+        guia.addActionListener(this);
         add(guia);
 
+        // ---- Nombre del jugador (clic = perfil) ----
         etiquetaNombre.setBounds(110, 146, 260, 36);
         etiquetaNombre.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         etiquetaNombre.addMouseListener(new MouseAdapter() {
@@ -95,32 +91,16 @@ public class PanelMesa extends PanelFieltro {
         });
         add(etiquetaNombre);
 
-        avatarMesa.setBounds(28, 124, 76, 76);
-        avatarMesa.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        avatarMesa.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                abrirPerfil();
-            }
-        });
-        add(avatarMesa);
-
-        pilaFichas.setBounds(40, 430, 320, 130);
-        add(pilaFichas);
-
+        // ---- Saldo (clic = recargar) ----
         Etiqueta tituloSaldo = new Etiqueta("TU SALDO", 34, Estilo.TEXTO, false);
         tituloSaldo.setHorizontalAlignment(SwingConstants.CENTER);
         tituloSaldo.setBounds(1008, 120, 264, 38);
         add(tituloSaldo);
         botonSaldo.setBounds(1008, 166, 272, 86);
-        botonSaldo.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                abrirRecarga();
-            }
-        });
+        botonSaldo.addActionListener(this);
         add(botonSaldo);
 
+        // ---- Cuadros de cartas y apuesta ----
         panelCrupier.setBounds(378, 118, PanelCrupier.ANCHO_PANEL + 8, PanelCrupier.ALTO_PANEL + 10);
         add(panelCrupier);
         cuadroApuesta.setBounds(528, 309, 232, 76);
@@ -132,79 +112,82 @@ public class PanelMesa extends PanelFieltro {
         etiquetaMensaje.setBounds(278, 580, 724, 26);
         add(etiquetaMensaje);
 
+        // ---- Repartir / Limpiar (solo durante la apuesta) ----
         botonLimpiar.tamanoTexto(30).ubicar(268, 313, 220, 62);
-        botonLimpiar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                juego.limpiarApuesta();
-                refrescar();
-            }
-        });
+        botonLimpiar.addActionListener(this);
         add(botonLimpiar);
         botonRepartir.tamanoTexto(32).ubicar(800, 313, 220, 62);
-        botonRepartir.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                repartir();
-            }
-        });
+        botonRepartir.addActionListener(this);
         add(botonRepartir);
 
-        configurarAccion(botonPedir, 251, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                juego.pedir();
-                despuesDeAccion();
-            }
-        });
-        configurarAccion(botonPlantarse, 450, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                juego.plantarse();
-                despuesDeAccion();
-            }
-        });
-        configurarAccion(botonDoblar, 648, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                juego.doblar();
-                despuesDeAccion();
-            }
-        });
-        configurarAccion(botonDividir, 846, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                juego.dividir();
-                despuesDeAccion();
-            }
-        });
+        // ---- Acciones de juego ----
+        configurarAccion(botonPedir, 251);
+        configurarAccion(botonPlantarse, 450);
+        configurarAccion(botonDoblar, 648);
+        configurarAccion(botonDividir, 846);
 
+        // ---- Fichas ----
         for (int i = 0; i < botonesFicha.length; i++) {
-            final int valor = ControladorJuego.FICHAS[i];
-            BotonFicha b = new BotonFicha(valor);
-            b.setBounds(298 + Math.round(i * 103.6f), 690, 64, 64);
-            b.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    juego.agregarFicha(valor);
-                    refrescar();
-                }
-            });
+            int valor = ControladorJuego.FICHAS[i];
+            BotonMetalico b = new BotonMetalico(String.valueOf(valor), BotonMetalico.Tipo.FICHA)
+                    .ubicar(298 + Math.round(i * 103.6f), 690, 64, 64);
+            b.addActionListener(this);
             botonesFicha[i] = b;
             add(b);
         }
 
+        // La capa de ventanas va al final del código pero al FRENTE (índice 0).
         capa.setBounds(0, 0, Estilo.ANCHO, Estilo.ALTO);
         add(capa, 0);
     }
 
-    private void configurarAccion(BotonMetalico boton, int x, ActionListener accion) {
+    private void configurarAccion(BotonMetalico boton, int x) {
         boton.tamanoTexto(30).ubicar(x, 614, 184, 68);
-        boton.addActionListener(accion);
+        boton.addActionListener(this);
         add(boton);
     }
 
-   
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Object fuente = e.getSource();
+        if (fuente == volver) {
+            ventana.volverAlMenu();
+        } else if (fuente == guia) {
+            abrirGuia();
+        } else if (fuente == botonSaldo) {
+            abrirRecarga();
+        } else if (fuente == botonLimpiar) {
+            juego.limpiarApuesta();
+            refrescar();
+        } else if (fuente == botonRepartir) {
+            repartir();
+        } else if (fuente == botonPedir) {
+            juego.pedir();
+            despuesDeAccion();
+        } else if (fuente == botonPlantarse) {
+            juego.plantarse();
+            despuesDeAccion();
+        } else if (fuente == botonDoblar) {
+            juego.doblar();
+            despuesDeAccion();
+        } else if (fuente == botonDividir) {
+            juego.dividir();
+            despuesDeAccion();
+        } else {
+            for (int i = 0; i < botonesFicha.length; i++) {
+                if (fuente == botonesFicha[i]) {
+                    juego.agregarFicha(ControladorJuego.FICHAS[i]);
+                    refrescar();
+                }
+            }
+        }
+    }
+
+    // ---------------------------------------------------------------
+    // ENTRADA Y SALIDA DE LA PANTALLA
+    // ---------------------------------------------------------------
+
+    // La llama VentanaPrincipal cada vez que se muestra la mesa.
     public void alMostrar() {
         ControladorPrincipal principal = ventana.getControlador();
         juego = principal.getJuego();
@@ -226,7 +209,8 @@ public class PanelMesa extends PanelFieltro {
         }
         abrirSegunDestino(principal.getDestino());
     }
-   
+
+    // Se llama al salir de la mesa: detiene toda animación pendiente.
     public void detener() {
         detenerHilo(hiloReparto);
         detenerHilo(hiloCrupier);
@@ -237,13 +221,13 @@ public class PanelMesa extends PanelFieltro {
         repartiendo = false;
     }
 
-    private void detenerHilo(HiloAnimacion hilo) {
+    private void detenerHilo(Thread hilo) {
         if (hilo != null) {
-            hilo.detener();
+            hilo.interrupt();
         }
     }
 
-  
+    // Si en el menú se eligió Historial o Ajustes, esa ventana se abre encima de la mesa.
     private void abrirSegunDestino(String destino) {
         if (destino.equals(ControladorPrincipal.DESTINO_HISTORIAL)) {
             abrirHistorial();
@@ -252,20 +236,21 @@ public class PanelMesa extends PanelFieltro {
         }
     }
 
+    // ---------------------------------------------------------------
+    // ESTADO DE LA RONDA -> PANTALLA
+    // ---------------------------------------------------------------
     private void refrescar() {
         Ronda ronda = juego.getRonda();
         String fase = ronda.getFase();
         int saldo = usuario.getSaldo();
 
         etiquetaNombre.setText(usuario.getNombre().toUpperCase());
-        avatarMesa.setAvatar(usuario.getAvatar());
-        pilaFichas.setTotal(ronda.getApuestaTotal());
         botonSaldo.setSaldo(saldo);
         cuadroApuesta.setApuesta(ronda.getApuestaTotal());
         panelCrupier.setDatos(ronda.getCrupier(), limiteCrupier);
         panelJugador.setDatos(ronda, limiteJugador);
 
-    
+        // Apuesta
         boolean apostando = fase.equals(Ronda.FASE_APUESTA) && !repartiendo;
         for (int i = 0; i < botonesFicha.length; i++) {
             int valor = ControladorJuego.FICHAS[i];
@@ -276,6 +261,7 @@ public class PanelMesa extends PanelFieltro {
         botonLimpiar.setEnabled(apostando && ronda.getApuestaPendiente() > 0);
         botonRepartir.setEnabled(apostando && ronda.puedeRepartir());
 
+        // Acciones (el modelo decide cuáles son posibles)
         boolean jugando = fase.equals(Ronda.FASE_JUGADOR) && !repartiendo;
         botonPedir.setEnabled(jugando && ronda.puedePedir());
         botonPlantarse.setEnabled(jugando && ronda.puedePlantarse());
@@ -309,22 +295,36 @@ public class PanelMesa extends PanelFieltro {
         return "";
     }
 
+    // ---------------------------------------------------------------
+    // REPARTO ANIMADO
+    // ---------------------------------------------------------------
     private void repartir() {
         juego.repartir();
         if (juego.getRonda().getFase().equals(Ronda.FASE_APUESTA)) {
             refrescar();   // no se pudo repartir
             return;
         }
-       
+        // Las 4 cartas ya están en el modelo; se muestran de a una: J, C, J, C.
         repartiendo = true;
         pasoReparto = 0;
         aplicarPasoReparto();
-        hiloReparto = new HiloReparto(new Runnable() {
+        hiloReparto = new Thread(new Runnable() {
             @Override
             public void run() {
-                avanzarReparto();
+                for (int i = 0; i < 4; i++) {
+                    if (!esperar(RETARDO_REPARTO)) {
+                        return;
+                    }
+                    enPantalla(new Runnable() {
+                        @Override
+                        public void run() {
+                            avanzarReparto();
+                        }
+                    });
+                }
             }
         });
+        hiloReparto.setDaemon(true);
         hiloReparto.start();
     }
 
@@ -346,10 +346,14 @@ public class PanelMesa extends PanelFieltro {
         limiteJugador = -1;
         limiteCrupier = -1;
         refrescar();
-        despuesDeAccion();   
+        despuesDeAccion();   // por si hubo blackjack y la ronda ya terminó
     }
 
+    // ---------------------------------------------------------------
+    // TURNO DEL CRUPIER Y RESULTADO
+    // ---------------------------------------------------------------
 
+    // Tras cualquier acción: ¿sigue el jugador, juega el crupier o terminó la ronda?
     private void despuesDeAccion() {
         refrescar();
         String fase = juego.getRonda().getFase();
@@ -362,34 +366,89 @@ public class PanelMesa extends PanelFieltro {
         }
     }
 
-   
+    // Hilo que juega el turno del crupier: pide una carta cada RETARDO_CRUPIER ms
+    // y, cuando termina, espera RETARDO_RESULTADO ms y muestra el resultado.
     private void iniciarTurnoCrupier() {
-        hiloCrupier = new HiloCrupier(juego,
-                new Runnable() {
+        hiloCrupier = new Thread(new Runnable() {
             @Override
             public void run() {
-                refrescar();
-            }
-        },
-                new Runnable() {
-            @Override
-            public void run() {
-                mostrarResultado();
+                crupierSigue = true;
+                while (crupierSigue) {
+                    if (!esperar(RETARDO_CRUPIER)) {
+                        return;
+                    }
+                    enPantalla(new Runnable() {
+                        @Override
+                        public void run() {
+                            crupierSigue = juego.pasoCrupier();
+                            refrescar();
+                        }
+                    });
+                }
+                if (esperar(RETARDO_RESULTADO)) {
+                    enPantalla(new Runnable() {
+                        @Override
+                        public void run() {
+                            mostrarResultado();
+                        }
+                    });
+                }
             }
         });
+        hiloCrupier.setDaemon(true);
         hiloCrupier.start();
     }
 
-  
+    // Hilo que espera RETARDO_RESULTADO ms y muestra el resultado
+    // (cuando la ronda termina sin turno del crupier, por ejemplo con blackjack).
     private void iniciarResultado() {
         detenerHilo(hiloResultado);
-        hiloResultado = new HiloResultado(new Runnable() {
+        hiloResultado = new Thread(new Runnable() {
             @Override
             public void run() {
-                mostrarResultado();
+                if (esperar(RETARDO_RESULTADO)) {
+                    enPantalla(new Runnable() {
+                        @Override
+                        public void run() {
+                            mostrarResultado();
+                        }
+                    });
+                }
             }
         });
+        hiloResultado.setDaemon(true);
         hiloResultado.start();
+    }
+
+    // Duerme el hilo actual. Devuelve false si el hilo fue detenido (interrupt).
+    private boolean esperar(int milisegundos) {
+        try {
+            Thread.sleep(milisegundos);
+            return true;
+        } catch (InterruptedException e) {
+            return false;
+        }
+    }
+
+    // Los componentes de Swing solo se tocan desde el hilo de Swing:
+    // la tarea se ejecuta allí y el hilo espera a que termine.
+    private void enPantalla(final Runnable tarea) {
+        final Thread hilo = Thread.currentThread();
+        if (hilo.isInterrupted()) {
+            return;
+        }
+        try {
+            SwingUtilities.invokeAndWait(new Runnable() {
+                @Override
+                public void run() {
+                    if (!hilo.isInterrupted()) {
+                        tarea.run();
+                    }
+                }
+            });
+        } catch (Exception e) {
+            hilo.interrupt();
+        }
     }
 
     private void mostrarResultado() {
@@ -421,7 +480,9 @@ public class PanelMesa extends PanelFieltro {
         refrescar();
     }
 
-    
+    // ---------------------------------------------------------------
+    // VENTANAS EMERGENTES
+    // ---------------------------------------------------------------
     private void abrirRecarga() {
         if (capa.estaAbierta()) {
             return;
@@ -442,7 +503,7 @@ public class PanelMesa extends PanelFieltro {
         }));
     }
 
-  
+    // Un Runnable que simplemente cierra la ventana abierta y refresca la mesa.
     private Runnable cerrarVentana() {
         return new Runnable() {
             @Override
@@ -472,15 +533,15 @@ public class PanelMesa extends PanelFieltro {
             return;
         }
         capa.mostrar(new PanelPerfil(usuario, ventana.getControlador().getPerfil(),
-                new Runnable() {     
+                new Runnable() {      // al guardar: se actualiza el nombre en la mesa
             @Override
             public void run() {
                 refrescar();
             }
         },
-                cerrarVentana(),     
-                cerrarVentana(),     
-                new Runnable() {     
+                cerrarVentana(),      // botón X
+                cerrarVentana(),      // CERRAR VENTANA
+                new Runnable() {      // CERRAR SESIÓN
             @Override
             public void run() {
                 capa.cerrar();
@@ -489,6 +550,43 @@ public class PanelMesa extends PanelFieltro {
         }));
     }
 
+    // Sobre el fieltro se dibujan el avatar del jugador y la pila de fichas apostadas.
+    @Override
+    protected void paintComponent(Graphics g0) {
+        super.paintComponent(g0);
+        if (usuario == null || juego == null) {
+            return;
+        }
+        Graphics2D g = Estilo.suavizar(g0);
+
+        DibujoAvatar.dibujar(g, usuario.getAvatar(), 66, 164, 35);
+        g.setStroke(new BasicStroke(3f));
+        g.setColor(Estilo.DORADO);
+        g.draw(new Ellipse2D.Double(31, 129, 70, 70));
+
+        // Pila de fichas: la apuesta se arma con las fichas de mayor valor.
+        int tam = 46;
+        int resto = juego.getRonda().getApuestaTotal();
+        int x = 60;
+        for (int i = ControladorJuego.FICHAS.length - 1; i >= 0 && resto > 0; i--) {
+            int valor = ControladorJuego.FICHAS[i];
+            int cantidad = resto / valor;
+            resto = resto % valor;
+            for (int k = 0; k < Math.min(cantidad, 10); k++) {
+                Estilo.dibujarFicha(g, x, 510 - k * 5, tam, valor);
+            }
+            if (cantidad > 0) {
+                x += tam + 6;
+            }
+        }
+        g.dispose();
+    }
+
+    // ===============================================================
+    // COMPONENTES PROPIOS DE LA MESA
+    // ===============================================================
+
+    // "1,500 FICHAS (>)" dentro de un cuadro de madera. Al hacer clic abre la recarga.
     private static class BotonSaldo extends JButton {
 
         private int saldo;
@@ -532,7 +630,7 @@ public class PanelMesa extends PanelFieltro {
             int base = (h - fm.getHeight()) / 2 + fm.getAscent();
             Estilo.dibujarTextoDegradado(g, texto, f, 20, base, new Color(0xF6E19A), new Color(0xC9962F), 2);
 
-            
+            // Círculo con flecha ">"
             double cx = w - 40;
             double cy = h / 2.0;
             g.setStroke(new BasicStroke(2.6f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
@@ -547,75 +645,7 @@ public class PanelMesa extends PanelFieltro {
         }
     }
 
-
-    private static class AvatarMesa extends JComponent {
-
-        private int avatar;
-
-        void setAvatar(int avatar) {
-            this.avatar = avatar;
-            repaint();
-        }
-
-        @Override
-        protected void paintComponent(Graphics g0) {
-            Graphics2D g = Estilo.suavizar(g0);
-            double radio = Math.min(getWidth(), getHeight()) / 2.0 - 3;
-            DibujoAvatar.dibujar(g, avatar, getWidth() / 2.0, getHeight() / 2.0, radio);
-            g.setStroke(new BasicStroke(3f));
-            g.setColor(Estilo.DORADO);
-            g.draw(new Ellipse2D.Double(getWidth() / 2.0 - radio, getHeight() / 2.0 - radio, radio * 2, radio * 2));
-            g.dispose();
-        }
-    }
-
-    
-    private static class PilaFichas extends JComponent {
-
-        private static final int TAM = 46;
-        private int total;
-
-        void setTotal(int total) {
-            this.total = total;
-            repaint();
-        }
-
-        @Override
-        protected void paintComponent(Graphics g0) {
-            if (total <= 0) {
-                return;
-            }
-            Graphics2D g = Estilo.suavizar(g0);
-            int[] fichas = ControladorJuego.FICHAS;
-            int resto = total;
-            int columna = 0;
-            int columnas = 0;
-            for (int i = fichas.length - 1; i >= 0; i--) {
-                if (resto >= fichas[i]) {
-                    columnas++;
-                    resto %= fichas[i];
-                }
-            }
-            int inicioX = (getWidth() - columnas * (TAM + 6)) / 2;
-            resto = total;
-            for (int i = fichas.length - 1; i >= 0; i--) {
-                int cantidad = resto / fichas[i];
-                if (cantidad == 0) {
-                    continue;
-                }
-                resto %= fichas[i];
-                int visibles = Math.min(cantidad, 10);
-                for (int k = 0; k < visibles; k++) {
-                    BotonFicha.dibujar(g, inicioX + columna * (TAM + 6), getHeight() - TAM - 6 - k * 5,
-                            TAM, fichas[i], true);
-                }
-                columna++;
-            }
-            g.dispose();
-        }
-    }
-
-
+    // "Bet: 50 FICHAS (APUESTA TOTAL)"
     private static class CuadroApuesta extends JComponent {
 
         private int apuesta;

@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "nombreUsuario": "Nahomy",
+    "fechaHora": "2026-11-06 22:38",
+    "apuesta": 50,
+    "manosJugador": "24",
+    "puntajeCrupier": 9,
+    "ganancia": -50,
+    "resultado": "Pierde"
+  },
+  {
+    "id": 2,
+    "nombreUsuario": "Nahomy",
+    "fechaHora": "2026-11-06 22:39",
+    "apuesta": 100,
+    "manosJugador": "21",
+    "puntajeCrupier": 21,
+    "ganancia": 0,
+    "resultado": "Empate"
+  },
+  {
+    "id": 3,
+    "nombreUsuario": "Nahomy",
+    "fechaHora": "2026-11-06 22:41",
+    "apuesta": 30,
+    "manosJugador": "28",
+    "puntajeCrupier": 10,
+    "ganancia": -30,
+    "resultado": "Pierde"
+  },
+  {
+    "id": 4,
+    "nombreUsuario": "Nahomy",
+    "fechaHora": "2026-11-06 22:41",
+    "apuesta": 25,
+    "manosJugador": "21",
+    "puntajeCrupier": 19,
+    "ganancia": 25,
+    "resultado": "Gana"
+  },
+  {
+    "id": 5,
+    "nombreUsuario": "Nahomy",
+    "fechaHora": "2026-11-06 22:42",
+    "apuesta": 200,
+    "manosJugador": "17 / 18",
+    "puntajeCrupier": 18,
+    "ganancia": -100,
+    "resultado": "Pierde"
+  }
+]

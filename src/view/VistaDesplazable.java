@@ -88,11 +88,6 @@ public abstract class VistaDesplazable extends JComponent {
         desplazamiento = Math.max(0, Math.min(maximo, desplazamiento));
     }
 
-    public void volverAlInicio() {
-        desplazamiento = 0;
-        repaint();
-    }
-
     @Override
     protected void paintComponent(Graphics g0) {
         Graphics2D g = Estilo.suavizar(g0);

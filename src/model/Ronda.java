@@ -227,13 +227,6 @@ public class Ronda {
         }
     }
 
-    public void jugarCrupier() {
-        while (crupierDebePedir()) {
-            crupierPide();
-        }
-        finalizarRonda();
-    }
-
     // ---------------------------------------------------------------
     // FIN DE LA RONDA
     // ---------------------------------------------------------------
@@ -289,12 +282,15 @@ public class Ronda {
 
     public RegistroPartida crearRegistro(int id, String fechaHora) {
         String manosTexto = "";
+        ArrayList<ArrayList<Carta>> cartasJugador = new ArrayList<ArrayList<Carta>>();
         for (int i = 0; i < manos.size(); i++) {
             if (i > 0) {
                 manosTexto += " / ";
             }
             manosTexto += manos.get(i).getPuntaje();
+            cartasJugador.add(new ArrayList<Carta>(manos.get(i).getCartas()));
         }
+        ArrayList<Carta> cartasCrupier = new ArrayList<Carta>(crupier.getMano().getCartas());
 
         String texto = "Empate";
         if (gananciaNeta > 0) {
@@ -304,7 +300,8 @@ public class Ronda {
         }
 
         return new RegistroPartida(id, usuario.getNombre(), fechaHora, getApuestaTotal(),
-                manosTexto, crupier.getMano().getPuntaje(), gananciaNeta, texto);
+                manosTexto, crupier.getMano().getPuntaje(), gananciaNeta, texto,
+                cartasJugador, cartasCrupier);
     }
 
     // ---------------------------------------------------------------

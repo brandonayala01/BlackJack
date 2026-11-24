@@ -7,32 +7,44 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 
 public class PanelRecarga extends VentanaModal {
 
-    public PanelRecarga(final ControladorJuego juego, final Runnable alRecargar, Runnable alCerrar) {
+    private final ControladorJuego juego;
+    private final Runnable alRecargar;
+    private final BotonMetalico[] botonesMonto = new BotonMetalico[ControladorJuego.RECARGAS.length];
+
+    public PanelRecarga(ControladorJuego juego, Runnable alRecargar, Runnable alCerrar) {
         super(600, 380, false);
         setTitulo("RECARGAR SALDO", 66, 54, new Color(0xF6E2B8), new Color(0xD4A862));
+        this.juego = juego;
+        this.alRecargar = alRecargar;
         agregarCerrar(alCerrar);
 
         int[] montos = ControladorJuego.RECARGAS;
         for (int i = 0; i < montos.length; i++) {
-            final int monto = montos[i];
+            int monto = montos[i];
             int columna = i % 3;
             int fila = i / 3;
             BotonMetalico b = new BotonMetalico("$" + monto, BotonMetalico.Tipo.MADERA)
                     .tamanoTexto(48).ubicar(25 + columna * 190, 138 + fila * 108, 170, 88);
-            b.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    juego.recargarSaldo(monto);
-                    alRecargar.run();
-                }
-            });
+            b.addActionListener(this);
+            botonesMonto[i] = b;
             add(b);
         }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        for (int i = 0; i < botonesMonto.length; i++) {
+            if (e.getSource() == botonesMonto[i]) {
+                juego.recargarSaldo(ControladorJuego.RECARGAS[i]);
+                alRecargar.run();
+                return;
+            }
+        }
+        super.actionPerformed(e);
     }
 
     @Override

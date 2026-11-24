@@ -82,10 +82,6 @@ public class Mano {
         return doblada;
     }
 
-    public boolean isVieneDeDivision() {
-        return vieneDeDivision;
-    }
-
     public void setVieneDeDivision(boolean vieneDeDivision) {
         this.vieneDeDivision = vieneDeDivision;
     }

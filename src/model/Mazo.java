@@ -40,10 +40,6 @@ public class Mazo {
         return cartas.remove(cartas.size() - 1);
     }
 
-    public int cartasRestantes() {
-        return cartas.size();
-    }
-
     public boolean necesitaBarajar() {
         return cartas.size() < 52;
     }

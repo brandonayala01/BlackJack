@@ -5,6 +5,7 @@ import persistence.HistorialRepositorio;
 import persistence.PartidaRepositorio;
 import persistence.UsuarioRepositorio;
 
+// Maneja la ventana "Perfil y ajustes de guardado": avatar y nombre.
 public class ControladorPerfil {
 
     public static final int TOTAL_AVATARES = 6;
@@ -20,6 +21,7 @@ public class ControladorPerfil {
         this.partidas = partidas;
     }
 
+    // Las flechas del avatar dan la vuelta: después del último viene el primero.
     public int siguienteAvatar(int actual) {
         return (actual + 1) % TOTAL_AVATARES;
     }
@@ -28,6 +30,7 @@ public class ControladorPerfil {
         return (actual - 1 + TOTAL_AVATARES) % TOTAL_AVATARES;
     }
 
+    // Botón "Guardar cambios". Devuelve el error o null si todo salió bien.
     public String guardarCambios(Usuario usuario, String nuevoNombre, int nuevoAvatar) {
         nuevoNombre = nuevoNombre.trim();
 
@@ -38,18 +41,18 @@ public class ControladorPerfil {
 
         String nombreViejo = usuario.getNombre();
         if (!nuevoNombre.equals(nombreViejo)) {
-            // --- BYPASS PERSISTENCIA PARA EXPOSICIÓN ---
-            /*
             Usuario otro = usuarios.buscarPorNombre(nuevoNombre);
-            if (otro != null && otro != usuario) { return "Ese nombre de usuario ya está en uso."; }
+            if (otro != null && otro != usuario) {
+                return "Ese nombre de usuario ya está en uso.";
+            }
+            // El historial y la partida guardada pasan a llevar el nombre nuevo.
             historial.cambiarNombreUsuario(nombreViejo, nuevoNombre);
             partidas.cambiarNombreUsuario(nombreViejo, nuevoNombre);
-            */
             usuario.setNombre(nuevoNombre);
         }
 
         usuario.setAvatar(nuevoAvatar);
-        // usuarios.guardar(); // BYPASS PERSISTENCIA
+        usuarios.guardar();
         return null;
     }
 }

@@ -7,6 +7,7 @@ import persistence.HistorialRepositorio;
 
 import java.util.ArrayList;
 
+// Entrega a la ventana de Historial los datos que necesita.
 public class ControladorHistorial {
 
     private HistorialRepositorio historial;
@@ -15,12 +16,13 @@ public class ControladorHistorial {
         this.historial = historial;
     }
 
+    // Filas de la tabla, de la ronda más reciente a la más antigua.
     public ArrayList<RegistroPartida> getRegistros(Usuario usuario) {
-        // --- BYPASS PERSISTENCIA PARA EXPOSICIÓN ---
-        // return historial.getDeUsuario(usuario.getNombre());
-        return new ArrayList<>(); // Retorna lista vacía para evitar errores
+        return historial.getDeUsuario(usuario.getNombre());
     }
 
+    // Datos de las tarjetas: % de victorias y racha actual.
+    // El saldo actual se lee directamente del usuario.
     public Estadisticas getEstadisticas(Usuario usuario) {
         return usuario.getEstadisticas();
     }
